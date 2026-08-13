@@ -28,7 +28,11 @@ export function CampaignMaterials({ campaign }: CampaignMaterialsProps) {
 
   const handleKit = () => {
     if (isAssetAvailable(campaign.kitUrl)) {
-      downloadAsset(campaign.kitUrl!, `${campaign.slug}-kit.rar`)
+      void downloadAsset(campaign.kitUrl!, `${campaign.slug}-kit.zip`).catch(
+        () => {
+          setUnavailableItem(`Kit completo — ${campaign.name}`)
+        },
+      )
       return
     }
 
@@ -93,10 +97,9 @@ export function CampaignMaterials({ campaign }: CampaignMaterialsProps) {
                     icon={<Download size={16} />}
                     onClick={() => {
                       if (isAssetAvailable(material.url)) {
-                        downloadAsset(
-                          material.url,
-                          material.url.split('/').pop(),
-                        )
+                        void downloadAsset(material.url).catch(() => {
+                          setUnavailableItem(material.title)
+                        })
                       } else {
                         setUnavailableItem(material.title)
                       }

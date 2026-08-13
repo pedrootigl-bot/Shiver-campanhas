@@ -75,7 +75,9 @@ export function TodayRecommendation({
   const handleDownloadStory = () => {
     if (!material) return
     if (isAssetAvailable(material.url)) {
-      downloadAsset(material.url, material.url.split('/').pop())
+      void downloadAsset(material.url).catch(() => {
+        setUnavailableItem(material.title)
+      })
     } else {
       setUnavailableItem(material.title)
     }

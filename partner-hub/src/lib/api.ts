@@ -40,3 +40,9 @@ export function fetchStats() {
 export function kitDownloadPath(campanhaId: string | number) {
   return `${API_URL}/api/download/kit/${campanhaId}`
 }
+
+export function fileDownloadPath(fileUrl: string, fileName?: string) {
+  const params = new URLSearchParams({ url: fileUrl })
+  if (fileName) params.set("nome", fileName)
+  return `${API_URL}/api/download/file?${params.toString()}`
+}
