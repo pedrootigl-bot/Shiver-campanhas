@@ -608,3 +608,61 @@ select:focus {
     background: linear-gradient(180deg, #60a5fa 0%, #3b82f6 100%) !important;
     color: #061018 !important;
 }
+
+@media (max-width: 720px) {
+    .admin-header {
+        flex-wrap: wrap;
+        min-height: auto;
+        padding: 0.85rem 4%;
+        gap: 0.75rem;
+    }
+
+    .admin-header h1,
+    .admin-header__left h1,
+    #pageTitle {
+        font-size: 1.15rem !important;
+        line-height: 1.25;
+    }
+
+    .admin-header__left,
+    .admin-header__actions {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .admin-header__actions {
+        justify-content: flex-start;
+    }
+
+    .admin-main {
+        width: min(100%, calc(100% - 1.5rem));
+        margin: 1.15rem auto 3rem;
+    }
+
+    .form-actions {
+        bottom: max(0.5rem, env(safe-area-inset-bottom));
+        padding: 0.85rem !important;
+    }
+
+    .form-actions .btn-primary,
+    .form-actions .btn-secondary,
+    #salvarBtn,
+    #cancelarBtn,
+    #adicionarCopyBtn,
+    #adicionarRegraBtn,
+    #adicionarMaterialBtn {
+        flex: 1 1 100%;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .btn-site-publico {
+        width: 100% !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .admin-header {
+        padding: 0.75rem 0.9rem;
+    }
+}

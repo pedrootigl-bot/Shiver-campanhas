@@ -4,11 +4,11 @@
 
 .navbar {
     position: fixed;
-    top: 18px;
+    top: max(12px, env(safe-area-inset-top));
     left: 50%;
     transform: translateX(-50%);
-    width: min(760px, 92vw);
-    height: 64px;
+    width: min(980px, calc(100vw - 24px));
+    height: 96px;
     background: rgba(10, 13, 20, 0.82);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 18px;
@@ -69,12 +69,13 @@
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     height: 100%;
     width: 100%;
+    max-width: none;
     margin: 0;
-    padding: 0 18px;
-    padding-inline: 18px;
+    padding: 0 14px 0 10px;
+    padding-inline: 10px 14px;
     box-sizing: border-box;
     z-index: 1;
 }
@@ -88,8 +89,12 @@
 }
 
 .logo img {
-    height: 36px;
     display: block;
+    height: 82px;
+    width: auto;
+    max-width: min(340px, 48vw);
+    object-fit: contain;
+    object-position: left center;
 }
 
 /*
@@ -242,8 +247,8 @@
 
 .menu-toggle {
     display: none;
-    width: 42px;
-    height: 42px;
+    width: 44px;
+    height: 44px;
     border: none;
     background: transparent;
     cursor: pointer;
@@ -278,18 +283,23 @@
     transform: translateY(-8px) rotate(-45deg);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 900px) {
     .navbar {
-        width: 92vw;
-        height: 60px;
+        width: calc(100vw - 20px);
+        height: 84px;
         overflow: visible;
+    }
+
+    .logo img {
+        height: 70px;
+        max-width: min(280px, 52vw);
     }
 
     .navbar__content {
         display: flex;
-        padding: 0 14px;
+        padding: 0 12px 0 8px;
         justify-content: space-between;
-        gap: 10px;
+        gap: 8px;
     }
 
     .menu-toggle {
@@ -378,6 +388,24 @@
 
     .navbar:hover {
         transform: translateX(-50%);
+    }
+}
+
+@media (max-width: 480px) {
+    .navbar {
+        top: max(8px, env(safe-area-inset-top));
+        width: calc(100vw - 16px);
+        height: 78px;
+        border-radius: 16px;
+    }
+
+    .logo img {
+        height: 62px;
+        max-width: min(220px, 56vw);
+    }
+
+    .navbar__content {
+        padding: 0 8px 0 6px;
     }
 }
 

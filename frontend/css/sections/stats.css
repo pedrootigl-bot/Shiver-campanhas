@@ -76,21 +76,11 @@
 }
 
 @media (max-width: 480px) {
-    .stats__grid {
-        grid-template-columns: 1fr;
-    }
-
     .stat-card {
-        border-right: none;
-        border-bottom: 1px solid var(--border);
-        padding: 1.25rem 1rem;
+        padding: 1.15rem 0.75rem;
     }
 
-    .stat-card:nth-child(-n + 2) {
-        border-bottom: 1px solid var(--border);
-    }
-
-    .stat-card:last-child {
-        border-bottom: none;
+    .stat-card span {
+        font-size: 0.66rem;
     }
 }

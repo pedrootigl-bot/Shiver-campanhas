@@ -344,7 +344,7 @@
 }
 
 /* Mobile — layout vertical */
-@media (max-width: 720px) {
+@media (max-width: 768px) {
     .calendar-section {
         padding: 3.25rem 0 4rem;
     }

@@ -22,7 +22,7 @@
 
     z-index:9999;
 
-    padding:20px;
+    padding: max(16px, env(safe-area-inset-top)) 20px max(16px, env(safe-area-inset-bottom));
 
 }
 
@@ -48,7 +48,7 @@
 
     width:min(95%,520px);
 
-    max-height:90vh;
+    max-height:min(90dvh, 90vh);
 
     overflow-y:auto;
 
@@ -1129,6 +1129,24 @@
 
 
 @media(max-width:768px){
+
+
+    .campaign-modal{
+
+        padding: max(8px, env(safe-area-inset-top)) 10px max(12px, env(safe-area-inset-bottom));
+
+    }
+
+
+    .modal-content{
+
+        width: min(100%, 520px);
+
+        padding: 18px 16px;
+
+        border-radius: 18px;
+
+    }
 
 
     .modal-tabs{

@@ -294,7 +294,7 @@
 @media (max-width: 1024px) {
     .highlight__card {
         height: auto;
-        min-height: 300px;
+        min-height: 280px;
     }
 
     .highlight__content {

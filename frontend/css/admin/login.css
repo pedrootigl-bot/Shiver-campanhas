@@ -313,7 +313,9 @@ body {
 
     .login {
         padding:
-            20px 16px;
+            max(20px, env(safe-area-inset-top))
+            16px
+            max(20px, env(safe-area-inset-bottom));
     }
 
     .login-box {

@@ -1292,15 +1292,26 @@
         height: auto;
         border-right: 0;
         border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 0.85rem;
     }
 
     .admin-sidebar__nav {
         flex-direction: row;
         flex-wrap: wrap;
+        gap: 0.4rem;
+    }
+
+    .admin-sidebar__nav a {
+        flex: 1 1 auto;
+        min-height: 42px;
     }
 
     .admin-sidebar__footer {
         display: none;
+    }
+
+    .admin-board__main {
+        padding: 1rem 0.9rem 2rem;
     }
 
     .admin-stats {
@@ -1323,6 +1334,11 @@
 @media (max-width: 720px) {
     .admin-topbar {
         flex-wrap: wrap;
+    }
+
+    .admin-topbar h1 {
+        white-space: normal;
+        font-size: 1.15rem;
     }
 
     .admin-search {
@@ -1351,14 +1367,15 @@
     }
 
     .campaigns-filters {
-        width: auto;
-        margin-left: auto;
-        flex-wrap: nowrap;
+        width: 100%;
+        margin-left: 0;
+        flex-wrap: wrap;
     }
 
     .campaigns-filter {
-        width: 180px;
-        min-width: 180px;
+        width: 100%;
+        min-width: 0;
+        flex: 1 1 100%;
     }
 
     .campanha-publicacao-status {

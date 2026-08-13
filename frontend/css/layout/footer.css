@@ -17,7 +17,8 @@
 }
 
 .footer__brand img {
-    width: 140px;
+    width: min(180px, 70%);
+    height: auto;
     margin-bottom: 1.1rem;
     opacity: 0.95;
 }

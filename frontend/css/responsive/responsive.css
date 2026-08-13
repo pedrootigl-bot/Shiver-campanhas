@@ -1,6 +1,21 @@
 /*==========================
-    RESPONSIVE — Partner Hub (320–1920)
+    RESPONSIVE — Shiver (320–1920)
 ==========================*/
+
+html {
+    overflow-x: clip;
+    scroll-padding-top: calc(var(--header-height) + 12px);
+}
+
+body {
+    overflow-x: clip;
+}
+
+img,
+video,
+iframe {
+    max-width: 100%;
+}
 
 @media (min-width: 1920px) {
     .container {
@@ -24,6 +39,10 @@
     .campaign-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
+
+    .support__cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 }
 
 @media (max-width: 768px) {
@@ -35,6 +54,34 @@
         width: 100%;
     }
 
+    .campaign-filters {
+        margin-inline: -0.35rem;
+        padding-inline: 0.35rem;
+        padding-bottom: 0.35rem;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+
+    .campaign-filters::-webkit-scrollbar {
+        display: none;
+    }
+
+    .section-header,
+    .highlight__header,
+    .support__header,
+    .calendar-section__header {
+        text-align: center;
+        margin-inline: auto;
+    }
+
+    .section-header p,
+    .highlight__header p,
+    .support__header p {
+        margin-inline: auto;
+    }
+}
+
+@media (max-width: 640px) {
     .support__cards {
         grid-template-columns: 1fr;
     }
@@ -44,27 +91,47 @@
     .campaign-grid {
         grid-template-columns: 1fr;
     }
+
+    .btn {
+        min-height: 46px;
+    }
 }
 
 @media (max-width: 480px) {
     .navbar {
-        top: 12px;
+        top: max(8px, env(safe-area-inset-top));
     }
 
     .hero {
-        padding: 5.75rem 0.75rem 2.5rem;
+        padding: 7.15rem 0.75rem 2.25rem;
     }
 
     .container {
-        padding-inline: 1.15rem;
+        padding-inline: max(1rem, env(safe-area-inset-left));
+        padding-inline-end: max(1rem, env(safe-area-inset-right));
     }
 
-    .section-header h2 {
+    .navbar .navbar__content {
+        padding: 0 8px 0 6px;
+        padding-inline: 6px 8px;
+    }
+
+    .section-header h2,
+    .highlight__header h2,
+    .support__header h2 {
         font-size: 1.55rem;
     }
 
     .footer__content {
         gap: 1.5rem;
+    }
+
+    .campaigns,
+    .calendar-section,
+    .support,
+    .highlight {
+        padding-left: 0;
+        padding-right: 0;
     }
 }
 
@@ -74,13 +141,14 @@
     }
 
     .container {
-        padding-inline: 1rem;
+        padding-inline: max(0.9rem, env(safe-area-inset-left));
+        padding-inline-end: max(0.9rem, env(safe-area-inset-right));
     }
 
     .hero__meta .info-card {
-        height: 48px;
+        height: auto;
         min-height: 48px;
-        padding-inline: 0.55rem;
+        padding-inline: 0.7rem;
     }
 
     .hero__meta .info-card__label {
@@ -88,25 +156,41 @@
     }
 
     .hero__meta .info-card__value {
-        font-size: 0.7rem;
+        font-size: 0.78rem;
+        white-space: normal;
     }
 }
 
 @media (max-width: 320px) {
     .container {
-        padding-inline: 0.9rem;
+        padding-inline: 0.8rem;
     }
 
     .navbar__content {
-        padding: 0 10px;
+        padding: 0 8px 0 4px;
     }
 
     .logo img {
-        height: 30px;
+        height: 54px;
+        max-width: 180px;
     }
 
     .btn {
         font-size: 0.9rem;
+    }
+}
+
+@media (max-height: 520px) and (orientation: landscape) {
+    .hero {
+        min-height: auto;
+        padding-top: 5.5rem;
+        padding-bottom: 1.5rem;
+    }
+
+    .hero__visual-card {
+        max-height: 70vh;
+        min-height: 0;
+        aspect-ratio: 16 / 10;
     }
 }
 

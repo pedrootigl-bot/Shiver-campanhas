@@ -226,4 +226,11 @@ document.addEventListener("DOMContentLoaded", () => {
     );
 
 
+    window.addEventListener("resize", () => {
+        if (window.innerWidth > 900) {
+            fecharMenu();
+        }
+    });
+
+
 });
