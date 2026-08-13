@@ -1,8 +1,20 @@
 /**
  * Sessão admin do Shiver.
  * Login passa pelo backend (banco novo). Não usa chave do projeto antigo.
+ *
+ * No Partner Hub (Vite 517x) e em produção, a API é a mesma origem (/api).
+ * No Live Server (5500) continua apontando para localhost:3000.
  */
-const ADMIN_API = "http://localhost:3000";
+function origemDaApi() {
+    const porta = String(window.location.port || "");
+    if (!porta || porta === "80" || porta === "443" || porta.startsWith("517")) {
+        return "";
+    }
+    return "http://localhost:3000";
+}
+
+const ADMIN_API = origemDaApi();
+const API = ADMIN_API;
 const SESSION_KEY = "shiver_admin_session";
 
 function lerSessao() {

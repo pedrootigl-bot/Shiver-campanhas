@@ -29,29 +29,14 @@ function parseDataCampanha(valor) {
 
 
 /**
- * Campanha conta nos stats públicos quando está ativa
- * ou agendada e pronta para publicação.
+ * Stats do Partner Hub: só campanhas ativas (em andamento).
  */
 function campanhaContaNosStats(campanha) {
     const status = String(campanha?.status || "")
         .toLowerCase()
         .trim();
 
-    if (status === "ativa") {
-        return true;
-    }
-
-    if (status !== "agendada") {
-        return false;
-    }
-
-    const pronta = campanha?.pronta_publicacao;
-    return (
-        pronta === true
-        || pronta === "true"
-        || pronta === 1
-        || pronta === "1"
-    );
+    return status === "ativa";
 }
 
 

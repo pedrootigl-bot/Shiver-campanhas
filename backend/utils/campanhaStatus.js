@@ -1,18 +1,20 @@
 /**
- * Status automático de campanhas (BULLEx)
+ * Status de campanhas
  *
  * agendada   → hoje < data_inicio
- * ativa       → data_inicio <= hoje < data_fim
+ * ativa       → período em curso (data chegou sozinha) OU admin confirmou
+ *               antecipação de data de uma campanha que estava agendada
  * finalizada  → hoje >= data_fim
  *
- * Fonte da verdade: datas. O status no banco é espelhado
- * sob demanda (GET) e no save (POST/PUT).
- *
- * Evolução futura:
- * - cron diário / webhook
- * - timezone configurável por conta
- * - flag status_manual_override
+ * Se o admin antecipar a data de início de uma campanha agendada para o
+ * período atual, o status permanece agendada até a confirmação
+ * (POST /api/campanhas/:id/publicar). Sem essa mudança de data, a campanha
+ * vira ativa sozinha quando o calendário chegar em data_inicio.
  */
+
+const {
+    mapaConfirmacaoDataPendente
+} = require("../services/campanhaHistorico.service");
 
 const STATUS = Object.freeze({
     AGENDADA: "agendada",
@@ -117,23 +119,102 @@ function statusPublicoVisivel(status, prontaPublicacao) {
 }
 
 /**
+ * Encerramento por data sempre vence.
+ * Se o admin já ativou, não rebaixa para agendada.
+ */
+function resolverStatusPersistido(statusAtual, dataInicio, dataFim, hoje = hojeISO()) {
+    const porData = calcularStatusPorDatas(dataInicio, dataFim, hoje);
+    if (porData === STATUS.FINALIZADA) {
+        return STATUS.FINALIZADA;
+    }
+    if (normalizarStatus(statusAtual) === STATUS.ATIVA) {
+        return STATUS.ATIVA;
+    }
+    return porData;
+}
+
+/**
+ * Campanha agendada teve a data de início antecipada e, com a nova data,
+ * já estaria no período atual. Exige confirmação do admin antes de ativar.
+ */
+function mudancaInicioExigeConfirmacao({
+    statusAnterior,
+    inicioAnterior,
+    inicioNovo,
+    fimNovo,
+    hoje = hojeISO()
+} = {}) {
+    if (normalizarStatus(statusAnterior) !== STATUS.AGENDADA) {
+        return false;
+    }
+
+    const antes = dataISO(inicioAnterior);
+    const depois = dataISO(inicioNovo);
+
+    if (!antes || !depois || antes === depois) {
+        return false;
+    }
+
+    return calcularStatusPorDatas(inicioNovo, fimNovo, hoje) === STATUS.ATIVA;
+}
+
+function resolverStatusAoSalvar({
+    statusAnterior,
+    inicioAnterior,
+    dataInicio,
+    dataFim,
+    hoje = hojeISO()
+} = {}) {
+    if (mudancaInicioExigeConfirmacao({
+        statusAnterior,
+        inicioAnterior,
+        inicioNovo: dataInicio,
+        fimNovo: dataFim,
+        hoje
+    })) {
+        return STATUS.AGENDADA;
+    }
+
+    return resolverStatusPersistido(
+        statusAnterior,
+        dataInicio,
+        dataFim,
+        hoje
+    );
+}
+
+/**
  * Atualiza no banco os status desatualizados e devolve a lista já corrigida.
  */
-async function sincronizarStatusCampanhas(supabase, campanhas = []) {
+async function sincronizarStatusCampanhas(supabase, campanhas = [], opcoes = {}) {
     const lista = Array.isArray(campanhas) ? campanhas : [];
     if (!lista.length) return [];
 
     const hoje = hojeISO();
     const atualizadas = [];
     const pendencias = [];
+    const idsPendentes = new Set(
+        (opcoes.idsConfirmacaoDataPendente || [])
+            .map((id) => Number(id))
+            .filter((id) => Number.isFinite(id) && id > 0)
+    );
 
     for (const campanha of lista) {
-        const esperado = calcularStatusPorDatas(
+        let esperado = resolverStatusPersistido(
+            campanha.status,
             campanha.data_inicio,
             campanha.data_fim,
             hoje
         );
         const atual = String(campanha.status || "").trim().toLowerCase();
+
+        if (
+            idsPendentes.has(Number(campanha.id))
+            && atual === STATUS.AGENDADA
+            && esperado === STATUS.ATIVA
+        ) {
+            esperado = STATUS.AGENDADA;
+        }
 
         if (atual !== esperado) {
             pendencias.push({ id: campanha.id, status: esperado });
@@ -169,8 +250,59 @@ async function sincronizarStatusCampanhas(supabase, campanhas = []) {
 
 async function sincronizarStatusCampanha(supabase, campanha) {
     if (!campanha) return null;
-    const [resultado] = await sincronizarStatusCampanhas(supabase, [campanha]);
+    const [resultado] = await sincronizarStatusComConfirmacaoData(
+        supabase,
+        [campanha]
+    );
     return resultado || null;
+}
+
+async function sincronizarStatusComConfirmacaoData(supabase, campanhas = []) {
+    const lista = Array.isArray(campanhas) ? campanhas : [];
+    if (!lista.length) return [];
+
+    const hoje = hojeISO();
+    const candidatos = lista.filter((campanha) => {
+        const status = String(campanha.status || "").trim().toLowerCase();
+        return (
+            status === STATUS.AGENDADA
+            && calcularStatusPorDatas(
+                campanha.data_inicio,
+                campanha.data_fim,
+                hoje
+            ) === STATUS.ATIVA
+        );
+    });
+
+    const mapaPendente = await mapaConfirmacaoDataPendente(
+        candidatos.map((campanha) => campanha.id)
+    );
+    const idsPendentes = [...mapaPendente.keys()];
+
+    const sincronizadas = await sincronizarStatusCampanhas(
+        supabase,
+        lista,
+        { idsConfirmacaoDataPendente: idsPendentes }
+    );
+
+    return sincronizadas.map((campanha) => {
+        const pendente = mapaPendente.get(Number(campanha.id));
+        const status = String(campanha.status || "").trim().toLowerCase();
+
+        if (!pendente || status !== STATUS.AGENDADA) {
+            return {
+                ...campanha,
+                confirmacao_data_pendente: false
+            };
+        }
+
+        return {
+            ...campanha,
+            confirmacao_data_pendente: true,
+            data_inicio_anterior: pendente.data_inicio_anterior,
+            data_inicio_nova: pendente.data_inicio_nova || dataISO(campanha.data_inicio)
+        };
+    });
 }
 
 module.exports = {
@@ -182,5 +314,9 @@ module.exports = {
     calcularStatusPorDatas,
     statusPublicoVisivel,
     sincronizarStatusCampanhas,
-    sincronizarStatusCampanha
+    sincronizarStatusCampanha,
+    sincronizarStatusComConfirmacaoData,
+    resolverStatusPersistido,
+    resolverStatusAoSalvar,
+    mudancaInicioExigeConfirmacao
 };

@@ -203,7 +203,8 @@ async function registrarAtualizacao({
     campanhaId,
     anterior,
     atual,
-    usuario
+    usuario,
+    extraMetadata
 } = {}) {
     try {
         const id = Number(campanhaId);
@@ -220,15 +221,22 @@ async function registrarAtualizacao({
 
         const ator = atorDoUsuario(usuario);
         const nomes = campos.map((item) => item.campo).join(", ");
+        const extra =
+            extraMetadata && typeof extraMetadata === "object"
+                ? extraMetadata
+                : {};
 
         await inserirHistorico({
             campanha_id: id,
             usuario_id: ator.usuario_id,
             acao: ACOES.ATUALIZADA,
-            descricao: `Campanha atualizada (${nomes})`,
+            descricao: extra.confirmacao_data_pendente
+                ? `Data de início alterada — aguardando confirmação (${nomes})`
+                : `Campanha atualizada (${nomes})`,
             metadata: {
                 usuario_email: ator.email,
-                campos
+                campos,
+                ...extra
             }
         });
 
@@ -297,11 +305,63 @@ async function listarHistorico(campanhaId) {
     return Array.isArray(data) ? data : [];
 }
 
+/**
+ * Campanhas agendadas cuja data de início foi antecipada para o período atual
+ * e ainda não tiveram a mudança confirmada pelo admin.
+ */
+async function mapaConfirmacaoDataPendente(campanhaIds = []) {
+    const ids = [...new Set(
+        (Array.isArray(campanhaIds) ? campanhaIds : [])
+            .map((id) => Number(id))
+            .filter((id) => Number.isFinite(id) && id > 0)
+    )];
+
+    if (!ids.length) {
+        return new Map();
+    }
+
+    const { data, error } = await supabase
+        .from("campanhas_historico")
+        .select("campanha_id, metadata, created_at")
+        .in("campanha_id", ids)
+        .order("created_at", { ascending: false });
+
+    if (error) {
+        console.error(
+            "[HISTÓRICO] Falha ao buscar confirmação de data:",
+            error.message || error
+        );
+        return new Map();
+    }
+
+    const mapa = new Map();
+
+    for (const linha of data || []) {
+        const id = Number(linha.campanha_id);
+        if (!id || mapa.has(id)) continue;
+
+        const meta =
+            linha.metadata && typeof linha.metadata === "object"
+                ? linha.metadata
+                : {};
+
+        if (meta.confirmacao_data_pendente === true) {
+            mapa.set(id, {
+                data_inicio_anterior: meta.data_inicio_anterior || null,
+                data_inicio_nova: meta.data_inicio_nova || null
+            });
+        }
+    }
+
+    return mapa;
+}
+
 module.exports = {
     ACOES,
     CAMPOS_RASTREADOS,
     compararCampos,
     listarHistorico,
+    mapaConfirmacaoDataPendente,
     registrarAtualizacao,
     registrarCriacao,
     registrarExclusao,

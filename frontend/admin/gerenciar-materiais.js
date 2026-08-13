@@ -1,5 +1,3 @@
-const API = "http://localhost:3000";
-
 const viewCampanhas = document.querySelector("#viewCampanhas");
 const viewMateriais = document.querySelector("#viewMateriais");
 const campanhasGrid = document.querySelector("#campanhasGrid");

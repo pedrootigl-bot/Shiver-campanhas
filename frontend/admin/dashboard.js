@@ -1,5 +1,3 @@
-const API = "http://localhost:3000";
-
 function statusOf(campanha) {
     return String(campanha?.status || "").trim().toLowerCase();
 }

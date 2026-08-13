@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="../css/admin/admin.css">
     <link rel="stylesheet" href="../css/admin/admin-theme.css">
     <link rel="stylesheet" href="../css/admin/campanhas-board.css?v=20260813saas">
-    <link rel="stylesheet" href="../css/admin/campanha-detalhes.css">
+    <link rel="stylesheet" href="../css/admin/campanha-detalhes.css?v=20260813publicar">
     <link rel="stylesheet" href="../css/admin/admin-saas.css?v=20260813saas">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
@@ -23,7 +23,7 @@
                 <button type="button" id="voltarBtn" class="btn btn-secondary">
                     Voltar para campanhas
                 </button>
-                <a href="../index.html" class="btn-site-publico">
+                <a href="/" class="btn-site-publico">
                     Voltar para o site público
                 </a>
             </div>
@@ -43,7 +43,7 @@
                         <i class="fa-solid fa-pen"></i>
                         Editar
                     </a>
-                    <a id="wsVisualizar" class="btn-secondary" href="../index.html" target="_blank" rel="noopener noreferrer">
+                    <a id="wsVisualizar" class="btn-secondary" href="/" target="_blank" rel="noopener noreferrer">
                         <i class="fa-solid fa-eye"></i>
                         Visualizar
                     </a>
@@ -112,6 +112,13 @@
                     <h4 class="campanha-prontidao__pendencias-title">Pendências</h4>
                     <p class="campanha-prontidao__pendencias-text" id="prontidaoPendenciasText"></p>
                     <ul class="campanha-prontidao__pendencias-list" id="prontidaoPendenciasList" hidden></ul>
+                </div>
+
+                <div class="campanha-prontidao__acoes" id="prontidaoAcoes" hidden>
+                    <p class="campanha-prontidao__hint" id="prontidaoHint"></p>
+                    <button type="button" class="btn-primary" id="btnPublicarCampanha">
+                        Confirmar nova data e ativar
+                    </button>
                 </div>
             </section>
 
@@ -251,6 +258,6 @@
 
     <script src="./supabase-client.js"></script>
     <script src="./admin-ui.js?v=20260813saas"></script>
-    <script src="campanha-detalhes.js?v=20260813saas"></script>
+    <script src="campanha-detalhes.js?v=20260813data"></script>
 </body>
 </html>

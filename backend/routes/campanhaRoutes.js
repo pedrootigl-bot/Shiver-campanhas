@@ -7,8 +7,11 @@ const requireAuth = require("../middleware/requireAuth");
 const { responderErroInterno } = require("../utils/httpErrors");
 const {
     calcularStatusPorDatas,
-    sincronizarStatusCampanhas,
-    sincronizarStatusCampanha
+    sincronizarStatusCampanha,
+    sincronizarStatusComConfirmacaoData,
+    resolverStatusAoSalvar,
+    mudancaInicioExigeConfirmacao,
+    dataISO
 } = require("../utils/campanhaStatus");
 const {
     sincronizarNotificacoesCampanhas
@@ -51,7 +54,7 @@ router.get("/", async (req, res) => {
         }
 
 
-        const sincronizadas = await sincronizarStatusCampanhas(
+        const sincronizadas = await sincronizarStatusComConfirmacaoData(
             supabase,
             data || []
         );
@@ -89,7 +92,7 @@ router.post("/sincronizar-status", requireAuth, async (req, res) => {
             );
         }
 
-        const sincronizadas = await sincronizarStatusCampanhas(
+        const sincronizadas = await sincronizarStatusComConfirmacaoData(
             supabase,
             data || []
         );
@@ -405,6 +408,128 @@ router.post("/", requireAuth, async (req, res) => {
 });
 
 // ======================================================
+// PUBLICAR CAMPANHA (admin confirma que está correta)
+// POST /api/campanhas/:id/publicar
+// Exige pronta_publicacao. Status passa a ativa e aparece no Partner Hub.
+// ======================================================
+
+router.post("/:id/publicar", requireAuth, async (req, res) => {
+    try {
+        const campanhaId = Number(req.params.id);
+
+        if (!campanhaId) {
+            return res.status(400).json({
+                erro: "ID da campanha inválido"
+            });
+        }
+
+        const { data: campanha, error } = await supabase
+            .from("campanhas")
+            .select("*")
+            .eq("id", campanhaId)
+            .single();
+
+        if (error || !campanha) {
+            return res.status(404).json({
+                erro: "Campanha não encontrada"
+            });
+        }
+
+        const statusAtual = String(campanha.status || "").trim().toLowerCase();
+
+        if (statusAtual === "finalizada") {
+            return res.status(400).json({
+                erro: "Campanha encerrada não pode ser ativada"
+            });
+        }
+
+        const [campanhaSincronizada] = await sincronizarStatusComConfirmacaoData(
+            supabase,
+            [campanha]
+        );
+        const pendenteConfirmacao = Boolean(
+            campanhaSincronizada?.confirmacao_data_pendente
+        );
+
+        if (statusAtual === "ativa") {
+            return res.json({
+                mensagem: "Campanha já está ativa",
+                campanha: {
+                    ...campanhaSincronizada,
+                    status: "ativa",
+                    pronta_publicacao: true
+                }
+            });
+        }
+
+        if (!pendenteConfirmacao) {
+            return res.status(400).json({
+                erro: "Só é possível ativar depois de antecipar a data de uma campanha agendada para o período atual e confirmar essa mudança."
+            });
+        }
+
+        let validacao;
+        try {
+            validacao = await validarCampanha(campanhaId);
+        } catch (erroValidacao) {
+            return responderErroInterno(
+                res,
+                erroValidacao,
+                "Erro ao validar campanha antes de publicar"
+            );
+        }
+
+        if (!validacao.pronta) {
+            return res.status(400).json({
+                erro: "A campanha ainda tem pendências. Corrija antes de ativar.",
+                pendencias: validacao.pendencias,
+                validacao
+            });
+        }
+
+        const { data: atualizada, error: erroUpdate } = await supabase
+            .from("campanhas")
+            .update({ status: "ativa" })
+            .eq("id", campanhaId)
+            .select()
+            .single();
+
+        if (erroUpdate) {
+            return responderErroInterno(
+                res,
+                erroUpdate,
+                "Erro ao ativar campanha"
+            );
+        }
+
+        await registrarAtualizacao({
+            campanhaId,
+            anterior: campanha,
+            atual: {
+                ...campanha,
+                status: "ativa"
+            },
+            usuario: req.user
+        });
+
+        return res.json({
+            mensagem: "Campanha ativada com sucesso",
+            campanha: {
+                ...atualizada,
+                pronta_publicacao: true
+            },
+            validacao
+        });
+    } catch (error) {
+        return responderErroInterno(
+            res,
+            error,
+            "Erro ao publicar campanha"
+        );
+    }
+});
+
+// ======================================================
 // ATUALIZAR CAMPANHA
 // PUT /api/campanhas/:id
 // ======================================================
@@ -537,8 +662,12 @@ router.put("/:id", requireAuth, async (req, res) => {
 
             data_fim,
 
-            // Datas mandam: status calculado automaticamente
-            status: calcularStatusPorDatas(data_inicio, data_fim),
+            status: resolverStatusAoSalvar({
+                statusAnterior: campanhaAnterior.status,
+                inicioAnterior: campanhaAnterior.data_inicio,
+                dataInicio: data_inicio,
+                dataFim: data_fim
+            }),
 
             imagem_card:
                 imagem_card?.trim() || null
@@ -580,11 +709,25 @@ router.put("/:id", requireAuth, async (req, res) => {
             );
         }
 
+        const exigeConfirmacaoData = mudancaInicioExigeConfirmacao({
+            statusAnterior: campanhaAnterior.status,
+            inicioAnterior: campanhaAnterior.data_inicio,
+            inicioNovo: data_inicio,
+            fimNovo: data_fim
+        });
+
         await registrarAtualizacao({
             campanhaId,
             anterior: campanhaAnterior,
             atual: campanhaAtualizada,
-            usuario: req.user
+            usuario: req.user,
+            extraMetadata: exigeConfirmacaoData
+                ? {
+                    confirmacao_data_pendente: true,
+                    data_inicio_anterior: dataISO(campanhaAnterior.data_inicio),
+                    data_inicio_nova: dataISO(data_inicio)
+                }
+                : undefined
         });
 
         // ==============================================
@@ -593,11 +736,20 @@ router.put("/:id", requireAuth, async (req, res) => {
 
         return res.json({
 
-            mensagem: "Campanha atualizada com sucesso",
+            mensagem: exigeConfirmacaoData
+                ? "Data alterada. Confirme a nova data nos detalhes para publicar no Partner Hub."
+                : "Campanha atualizada com sucesso",
 
             campanha: {
                 ...data,
-                pronta_publicacao: validacao.pronta
+                pronta_publicacao: validacao.pronta,
+                confirmacao_data_pendente: exigeConfirmacaoData,
+                data_inicio_anterior: exigeConfirmacaoData
+                    ? dataISO(campanhaAnterior.data_inicio)
+                    : undefined,
+                data_inicio_nova: exigeConfirmacaoData
+                    ? dataISO(data_inicio)
+                    : undefined
             },
 
             validacao

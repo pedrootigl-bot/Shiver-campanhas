@@ -1,5 +1,3 @@
-const API = "http://localhost:3000";
-
 document.addEventListener("DOMContentLoaded", async () => {
     const session = await requireAdminSession();
     if (!session) return;
@@ -1900,12 +1898,20 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
 
             salvou = true;
-            aviso(
-                isEditando
-                    ? "✓ Alterações salvas"
-                    : "✓ Campanha publicada",
-                "ok"
-            );
+            if (campanha?.confirmacao_data_pendente) {
+                aviso(
+                    resultado.mensagem
+                    || "Data alterada. Confirme a nova data nos detalhes da campanha para publicar no Partner Hub.",
+                    "warn"
+                );
+            } else {
+                aviso(
+                    isEditando
+                        ? "✓ Alterações salvas"
+                        : "✓ Campanha publicada",
+                    "ok"
+                );
+            }
 
             if (submitButton) {
                 submitButton.innerHTML = "✓ Alterações salvas";

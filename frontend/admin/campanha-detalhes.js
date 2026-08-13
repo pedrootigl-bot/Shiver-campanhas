@@ -1,5 +1,3 @@
-const API = "http://localhost:3000";
-
 // ======================================================
 // PEGAR ID DA URL
 // ======================================================
@@ -78,6 +76,13 @@ if (voltarBtn) {
         }
     );
 
+}
+
+const btnPublicarCampanha = document.querySelector("#btnPublicarCampanha");
+if (btnPublicarCampanha) {
+    btnPublicarCampanha.addEventListener("click", () => {
+        void publicarCampanha();
+    });
 }
 
 
@@ -491,6 +496,108 @@ function escaparHtmlProntidao(valor) {
         .replace(/'/g, "&#39;");
 }
 
+function atualizarAcoesPublicacao(campanha) {
+    const acoesEl = document.querySelector("#prontidaoAcoes");
+    const hintEl = document.querySelector("#prontidaoHint");
+    const btnEl = document.querySelector("#btnPublicarCampanha");
+
+    if (!acoesEl) return;
+
+    const pronta = normalizarProntaPublicacao(campanha?.pronta_publicacao);
+    const status = String(campanha?.status || "").trim().toLowerCase();
+    const pendenteData =
+        campanha?.confirmacao_data_pendente === true
+        || campanha?.confirmacao_data_pendente === "true";
+
+    if (status === "ativa") {
+        acoesEl.hidden = false;
+        if (hintEl) {
+            hintEl.textContent = "Campanha ativa no Partner Hub.";
+        }
+        if (btnEl) btnEl.hidden = true;
+        return;
+    }
+
+    if (pronta !== true || status === "finalizada" || !pendenteData) {
+        acoesEl.hidden = true;
+        if (hintEl) hintEl.textContent = "";
+        if (btnEl) btnEl.hidden = true;
+        return;
+    }
+
+    const dataAntes = formatarData(campanha.data_inicio_anterior);
+    const dataNova = formatarData(
+        campanha.data_inicio_nova || campanha.data_inicio
+    );
+
+    acoesEl.hidden = false;
+    if (hintEl) {
+        hintEl.textContent =
+            `A data de início mudou de ${dataAntes} para ${dataNova}. Confirme se essa alteração está correta para a campanha aparecer no Partner Hub.`;
+    }
+    if (btnEl) {
+        btnEl.hidden = false;
+        btnEl.disabled = false;
+        btnEl.textContent = "Confirmar nova data e ativar";
+    }
+}
+
+async function publicarCampanha() {
+    const btnEl = document.querySelector("#btnPublicarCampanha");
+    if (!campanhaId) return;
+
+    const confirmar = window.confirm(
+        "Confirmar que a mudança de data está correta e ativar a campanha no Partner Hub?"
+    );
+    if (!confirmar) return;
+
+    if (btnEl) {
+        btnEl.disabled = true;
+        btnEl.textContent = "Ativando...";
+    }
+
+    try {
+        const headers = typeof getAuthHeaders === "function"
+            ? await getAuthHeaders({
+                "Content-Type": "application/json"
+            })
+            : { "Content-Type": "application/json" };
+
+        const resposta = await fetch(
+            `${API}/api/campanhas/${campanhaId}/publicar`,
+            {
+                method: "POST",
+                headers
+            }
+        );
+
+        const dados = await resposta.json().catch(() => ({}));
+
+        if (resposta.status === 401) {
+            throw new Error("Faça login no admin para ativar a campanha.");
+        }
+
+        if (!resposta.ok) {
+            throw new Error(
+                dados.erro || dados.error || "Não foi possível ativar a campanha."
+            );
+        }
+
+        window.ShiverUI?.notifyOk(
+            dados.mensagem || "Campanha ativada com sucesso."
+        );
+        window.location.reload();
+    } catch (error) {
+        window.ShiverUI?.notifyError(
+            error.message || "Não foi possível ativar a campanha."
+        );
+        if (btnEl) {
+            btnEl.disabled = false;
+            btnEl.textContent = "Confirmar nova data e ativar";
+        }
+    }
+}
+
 /**
  * Normaliza o flag vindo da API.
  * true / false → boolean
@@ -583,6 +690,7 @@ function renderProntidaoPublicacao(campanha) {
             pendenciasList.hidden = true;
             pendenciasList.innerHTML = "";
         }
+        atualizarAcoesPublicacao(campanha);
         return;
     }
 
@@ -645,6 +753,7 @@ function renderProntidaoPublicacao(campanha) {
                 }
             }
         }
+        atualizarAcoesPublicacao(campanha);
         return;
     }
 
@@ -665,6 +774,7 @@ function renderProntidaoPublicacao(campanha) {
     }
 
     if (pendenciasBox) pendenciasBox.hidden = true;
+    atualizarAcoesPublicacao(campanha);
 }
 
 

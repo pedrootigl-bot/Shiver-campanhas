@@ -11,7 +11,7 @@ const supabase = require("../config/supabase");
 const {
     hojeISO,
     dataISO,
-    sincronizarStatusCampanhas,
+    sincronizarStatusComConfirmacaoData,
     STATUS
 } = require("../utils/campanhaStatus");
 
@@ -265,7 +265,7 @@ async function sincronizarNotificacoesCampanhas() {
 
     if (error) throw error;
 
-    const sincronizadas = await sincronizarStatusCampanhas(
+    const sincronizadas = await sincronizarStatusComConfirmacaoData(
         supabase,
         campanhas || []
     );

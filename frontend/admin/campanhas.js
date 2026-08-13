@@ -1,5 +1,3 @@
-const API = "http://localhost:3000";
-
 const container = document.querySelector("#campanhasContainer");
 let campanhasCache = [];
 let featuredId = null;

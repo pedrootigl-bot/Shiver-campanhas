@@ -7,7 +7,7 @@
  */
 
 const supabase = require("../config/supabase");
-const { sincronizarStatusCampanhas } = require("../utils/campanhaStatus");
+const { sincronizarStatusComConfirmacaoData } = require("../utils/campanhaStatus");
 const { validarCampanha } = require("../services/campanhaValidacao.service");
 
 async function executarJobCampanhas() {
@@ -25,7 +25,7 @@ async function executarJobCampanhas() {
 
     const campanhas = Array.isArray(data) ? data : [];
 
-    const sincronizadas = await sincronizarStatusCampanhas(
+    const sincronizadas = await sincronizarStatusComConfirmacaoData(
         supabase,
         campanhas
     );

@@ -3,6 +3,7 @@ const cors = require("cors");
 require("dotenv").config();
 
 const campanhasRoutes = require("./routes/campanhaRoutes");
+const partnerHubRoutes = require("./routes/partnerHubRoutes");
 const materiaisRoutes = require("./routes/materiaisRoutes");
 const copiesRoutes = require("./routes/copiesRoutes");
 const regrasRoutes = require("./routes/regras");
@@ -23,24 +24,36 @@ const app = express();
 
 const corsOrigins = String(
     process.env.CORS_ORIGINS
-    || "http://localhost:5500,http://127.0.0.1:5500,http://localhost:3000,http://localhost:55434,http://127.0.0.1:55434"
+    || "http://localhost:5500,http://127.0.0.1:5500,http://localhost:3000,http://localhost:5173,http://127.0.0.1:5173,http://localhost:5174,http://127.0.0.1:5174,http://localhost:5175,http://127.0.0.1:5175,http://localhost:5176,http://127.0.0.1:5176,http://localhost:55434,http://127.0.0.1:55434"
 )
     .split(",")
     .map((origin) => origin.trim())
     .filter(Boolean);
 
+function origemPermitida(origin) {
+    if (!origin) return true;
+    if (corsOrigins.includes("*") || corsOrigins.includes(origin)) {
+        return true;
+    }
+
+    try {
+        const url = new URL(origin);
+        const local = url.hostname === "localhost" || url.hostname === "127.0.0.1";
+        const porta = Number(url.port);
+        return local && porta >= 5173 && porta <= 5199;
+    } catch {
+        return false;
+    }
+}
+
 app.use(cors({
     origin(origin, callback) {
-        // Permite ferramentas locais sem Origin (curl/Postman)
-        if (!origin) {
+        if (origemPermitida(origin)) {
             return callback(null, true);
         }
 
-        if (corsOrigins.includes("*") || corsOrigins.includes(origin)) {
-            return callback(null, true);
-        }
-
-        return callback(new Error("Origin não permitida pelo CORS"));
+        console.warn("[CORS] Origin bloqueada:", origin);
+        return callback(null, false);
     }
 }));
 app.use(express.json({ limit: "2mb" }));
@@ -73,6 +86,11 @@ app.use(
 app.use(
     "/api/campanhas",
     campanhasRoutes
+);
+
+app.use(
+    "/api/partner-hub",
+    partnerHubRoutes
 );
 
 app.use(
