@@ -14,6 +14,12 @@ const {
     sincronizarNotificacoesCampanhas
 } = require("../services/notificacoes.service");
 const { validarCampanha } = require("../services/campanhaValidacao.service");
+const {
+    listarHistorico,
+    registrarAtualizacao,
+    registrarCriacao,
+    registrarExclusao
+} = require("../services/campanhaHistorico.service");
 
 
 // ======================================================
@@ -117,6 +123,42 @@ router.post("/sincronizar-status", requireAuth, async (req, res) => {
 
     }
 
+});
+
+
+// ======================================================
+// HISTÓRICO DA CAMPANHA (admin autenticado)
+// GET /api/campanhas/historico/:id
+// ======================================================
+
+router.get("/historico/:id", requireAuth, async (req, res) => {
+    try {
+        const campanhaId = Number(req.params.id);
+
+        if (!campanhaId) {
+            return res.status(400).json({
+                erro: "ID da campanha inválido"
+            });
+        }
+
+        const historico = await listarHistorico(campanhaId);
+
+        return res.json({
+            historico
+        });
+    } catch (error) {
+        if (error?.statusCode === 400) {
+            return res.status(400).json({
+                erro: error.message
+            });
+        }
+
+        return responderErroInterno(
+            res,
+            error,
+            "Erro ao buscar histórico da campanha"
+        );
+    }
 });
 
 
@@ -327,6 +369,11 @@ router.post("/", requireAuth, async (req, res) => {
             );
         }
 
+        await registrarCriacao({
+            campanha: data,
+            usuario: req.user
+        });
+
         // ==================================================
         // RESPOSTA
         // ==================================================
@@ -422,6 +469,18 @@ router.put("/:id", requireAuth, async (req, res) => {
                 erro: "A data de fim é obrigatória"
             });
 
+        }
+
+        const { data: campanhaAnterior, error: erroAnterior } = await supabase
+            .from("campanhas")
+            .select("*")
+            .eq("id", campanhaId)
+            .single();
+
+        if (erroAnterior || !campanhaAnterior) {
+            return res.status(404).json({
+                erro: "Campanha não encontrada"
+            });
         }
 
 
@@ -521,6 +580,13 @@ router.put("/:id", requireAuth, async (req, res) => {
             );
         }
 
+        await registrarAtualizacao({
+            campanhaId,
+            anterior: campanhaAnterior,
+            atual: campanhaAtualizada,
+            usuario: req.user
+        });
+
         // ==============================================
         // RESPOSTA
         // ==============================================
@@ -573,10 +639,10 @@ router.delete("/:id", requireAuth, async (req, res) => {
         }
 
 
-        // Confere se a campanha existe
+        // Confere se a campanha existe (snapshot completo para auditoria)
         const { data: campanha, error: erroBusca } = await supabase
             .from("campanhas")
-            .select("id")
+            .select("*")
             .eq("id", campanhaId)
             .single();
 
@@ -629,6 +695,11 @@ router.delete("/:id", requireAuth, async (req, res) => {
             }
 
         }
+
+        await registrarExclusao({
+            campanha,
+            usuario: req.user
+        });
 
 
         const { error: erroCampanha } = await supabase

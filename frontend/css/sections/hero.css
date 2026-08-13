@@ -9,7 +9,7 @@
     min-height: 100dvh;
     padding: 9.25rem clamp(1rem, 3vw, 2rem) 3.75rem;
     overflow: hidden;
-    background: #000;
+    background: transparent;
     opacity: 0;
 }
 

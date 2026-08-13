@@ -1,39 +1,45 @@
 :root {
-    /* Cores — Partner Hub */
-    --primary: #3b82f6;
-    --secondary: #93c5fd;
-    --accent: #bfdbfe;
-    --primary-dark: #1d4ed8;
-    --primary-soft: rgba(59, 130, 246, 0.14);
-    --primary-glow: rgba(59, 130, 246, 0.35);
+    /* Marca — azul safira + champagne */
+    --primary: #6d8fd4;
+    --secondary: #a8c0ea;
+    --accent: #d7c4a0;
+    --primary-dark: #3d5a9a;
+    --primary-soft: rgba(109, 143, 212, 0.14);
+    --primary-glow: rgba(109, 143, 212, 0.28);
+    --gold: #c9b07a;
+    --gold-soft: rgba(201, 176, 122, 0.16);
+    --gold-line: rgba(201, 176, 122, 0.38);
+    --ivory: #f3eee4;
 
-    --background: #070910;
-    --background-deep: #0a0d14;
-    --surface: #0b1118;
-    --surface-elevated: #101620;
-    --surface-hover: #122030;
-    --surface-card: linear-gradient(165deg, #151d28 0%, #0c1018 100%);
+    --background: #05070c;
+    --background-deep: #080b12;
+    --surface: #0c1018;
+    --surface-elevated: #121824;
+    --surface-hover: #171e2c;
+    --surface-card: linear-gradient(165deg, rgba(22, 28, 40, 0.96) 0%, rgba(10, 13, 20, 0.98) 100%);
 
-    --text: #d8dce6;
-    --text-muted: #8f969f;
+    --text: #ece8e0;
+    --text-muted: #9b958c;
     --white: #ffffff;
-    --border: rgba(255, 255, 255, 0.09);
-    --border-strong: rgba(255, 255, 255, 0.16);
-    --border-green: rgba(59, 130, 246, 0.28);
+    --border: rgba(243, 238, 228, 0.08);
+    --border-strong: rgba(243, 238, 228, 0.16);
+    --border-green: rgba(201, 176, 122, 0.34);
 
     /* Tipografia */
-    --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
-    --font-display: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+    --font-title: "Exo 2", sans-serif;
+    --font-subtitle: "Montserrat", sans-serif;
+    --font-sans: "Poppins", sans-serif;
+    --font-display: "Exo 2", sans-serif;
 
     /* Layout */
     --container: 1200px;
     --header-height: 128px;
-    --radius: 16px;
-    --radius-sm: 12px;
-    --radius-lg: 24px;
+    --radius: 14px;
+    --radius-sm: 10px;
+    --radius-lg: 20px;
 
     /* Motion */
     --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-    --transition: 0.3s var(--ease-out);
-    --shadow-lift: 0 18px 48px rgba(0, 0, 0, 0.35);
+    --transition: 0.35s var(--ease-out);
+    --shadow-lift: 0 22px 50px rgba(0, 0, 0, 0.42);
 }

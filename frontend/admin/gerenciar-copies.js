@@ -75,6 +75,12 @@ function imagemCampanha(campanha) {
     );
 }
 
+function aviso(mensagem, tipo = "ok") {
+    if (tipo === "error") window.ShiverUI?.notifyError(mensagem);
+    else if (tipo === "warn") window.ShiverUI?.notifyWarn(mensagem);
+    else window.ShiverUI?.notifyOk(mensagem);
+}
+
 function mostrarEstado(el, mensagem, tipo = "") {
     if (!el) return;
     el.hidden = !mensagem;
@@ -160,7 +166,7 @@ async function carregarCampanhasAtivas() {
             campanhasGrid.innerHTML = "";
             mostrarEstado(
                 campanhasState,
-                "Nenhuma campanha ativa no momento."
+                "Não existem campanhas ativas ainda. Crie sua primeira campanha para começar."
             );
             return;
         }
@@ -266,6 +272,7 @@ async function carregarCopiesCampanha(campanha) {
             copiesState.className = "gm-state";
             copiesState.innerHTML = `
                 <p>Esta campanha ainda não possui copies cadastradas.</p>
+                <small>Adicione a primeira copy para começar.</small>
                 <div class="gm-empty-actions">
                     <button type="button" class="gm-btn gm-btn--primary" id="emptyAddCopyBtn">
                         <i class="fa-solid fa-plus"></i>
@@ -378,7 +385,7 @@ function fecharVisualizarCopy() {
 async function copiarTexto(texto, botao) {
     const conteudo = String(texto || "");
     if (!conteudo) {
-        window.alert("Esta copy não possui texto.");
+        aviso("Esta copy não possui texto.", "warn");
         return;
     }
 
@@ -394,7 +401,7 @@ async function copiarTexto(texto, botao) {
         }
     } catch (error) {
         console.error("Erro ao copiar texto:", error);
-        window.alert("Não foi possível copiar o texto.");
+        aviso("Não foi possível copiar o texto.", "error");
     }
 }
 
@@ -420,7 +427,11 @@ async function salvarCopy(event) {
         return;
     }
 
-    if (copySalvarBtn) copySalvarBtn.disabled = true;
+    const textoOriginal = copySalvarBtn?.innerHTML;
+    if (copySalvarBtn) {
+        copySalvarBtn.disabled = true;
+        copySalvarBtn.textContent = "Salvando...";
+    }
     setFormStatus("");
 
     try {
@@ -457,6 +468,7 @@ async function salvarCopy(event) {
         }
 
         fecharModalCopy();
+        aviso("✓ Alterações salvas");
         await carregarCopiesCampanha(campanhaSelecionada);
     } catch (error) {
         console.error("Erro ao salvar copy:", error);
@@ -464,8 +476,14 @@ async function salvarCopy(event) {
             error.message || "Erro ao salvar copy.",
             "is-error"
         );
+        aviso(error.message || "Erro ao salvar copy.", "error");
     } finally {
-        if (copySalvarBtn) copySalvarBtn.disabled = false;
+        if (copySalvarBtn) {
+            copySalvarBtn.disabled = false;
+            copySalvarBtn.innerHTML =
+                textoOriginal ||
+                '<i class="fa-solid fa-check"></i> Salvar';
+        }
     }
 }
 
@@ -493,9 +511,10 @@ async function excluirCopy(copy) {
         }
 
         await carregarCopiesCampanha(campanhaSelecionada);
+        aviso("Item removido");
     } catch (error) {
         console.error("Erro ao excluir copy:", error);
-        window.alert(error.message || "Erro ao excluir copy.");
+        aviso(error.message || "Erro ao excluir copy.", "error");
     }
 }
 
@@ -519,7 +538,7 @@ campanhasGrid?.addEventListener("click", (event) => {
 
     const campanha = campanhasCache.find((item) => Number(item.id) === id);
     if (!campanha) {
-        window.alert("Não foi possível abrir a campanha.");
+        aviso("Não foi possível abrir a campanha.", "error");
         return;
     }
 
@@ -559,6 +578,21 @@ async function iniciar() {
     const session = await requireAdminSession();
     if (!session) return;
     await carregarCampanhasAtivas();
+
+    const id = new URLSearchParams(window.location.search).get("id");
+    if (!id) return;
+
+    let campanha = campanhasCache.find((item) => String(item.id) === String(id));
+    if (!campanha) {
+        try {
+            const resposta = await fetch(`${API}/api/campanhas/${id}`);
+            if (resposta.ok) campanha = await resposta.json();
+        } catch (error) {
+            console.error("Erro ao abrir campanha pelas copies:", error);
+        }
+    }
+
+    if (campanha?.id) mostrarViewCopies(campanha);
 }
 
 iniciar();

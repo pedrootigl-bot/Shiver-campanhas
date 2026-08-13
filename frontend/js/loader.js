@@ -11,9 +11,9 @@
 
     const status = loader.querySelector(".site-loader__status");
     const messages = [
-        "Preparando materiais",
+        "Preparando sua experiência",
         "Sincronizando campanhas",
-        "Montando Partner Hub"
+        "Abrindo o Partner Hub"
     ];
     let messageIndex = 0;
 

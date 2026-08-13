@@ -21,8 +21,7 @@ body {
     min-height: 100vh;
 
     font-family:
-        Arial,
-        Helvetica,
+        "Poppins",
         sans-serif;
 
     background:
@@ -1038,8 +1037,7 @@ main.dashboard > #voltarBtn {
 #imagem_card {
 
     font-family:
-        Arial,
-        Helvetica,
+        "Poppins",
         sans-serif;
 }
 

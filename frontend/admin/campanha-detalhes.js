@@ -85,19 +85,60 @@ if (voltarBtn) {
 // VALIDAR ID
 // ======================================================
 
+const wsEditar = document.querySelector("#wsEditar");
+const wsMateriais = document.querySelector("#wsMateriais");
+
+if (wsEditar && campanhaId) {
+    wsEditar.href = `campanha-form.html?id=${encodeURIComponent(campanhaId)}`;
+}
+
+if (wsMateriais && campanhaId) {
+    wsMateriais.href = `gerenciar-materiais.html?id=${encodeURIComponent(campanhaId)}`;
+}
+
+const linkCopies = document.querySelector("#linkCopies");
+const linkMateriais = document.querySelector("#linkMateriais");
+if (linkCopies && campanhaId) {
+    linkCopies.href = `gerenciar-copies.html?id=${encodeURIComponent(campanhaId)}`;
+}
+if (linkMateriais && campanhaId) {
+    linkMateriais.href = `gerenciar-materiais.html?id=${encodeURIComponent(campanhaId)}`;
+}
+
 if (!campanhaId) {
 
     console.error(
         "ID da campanha não informado."
     );
 
-    alert(
-        "ID da campanha não informado."
-    );
+    window.ShiverUI?.notifyError("ID da campanha não informado.");
 
     window.location.href =
         "campanhas.html";
 
+}
+
+function setConteudoCount(id, valor) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const n = Number(valor) || 0;
+    el.textContent = String(n).padStart(2, "0");
+}
+
+function rotuloStatusCampanha(status) {
+    const valor = String(status || "").trim().toLowerCase();
+    if (valor === "ativa") return "Ativa";
+    if (valor === "agendada") return "Em preparação";
+    if (valor === "finalizada") return "Encerrada";
+    return status || "—";
+}
+
+function formatarTamanhoArquivo(valor) {
+    const n = Number(valor);
+    if (!n || n < 0) return "";
+    if (n < 1024) return `${n} B`;
+    if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)} KB`;
+    return `${(n / (1024 * 1024)).toFixed(1)} MB`;
 }
 
 
@@ -338,8 +379,16 @@ async function carregarCampanha() {
         if (detailStatus) {
 
             detailStatus.textContent =
-                campanha.status || "-";
+                rotuloStatusCampanha(campanha.status);
 
+        }
+
+        const workspaceMeta = document.querySelector("#workspaceMeta");
+        if (workspaceMeta) {
+            const categoria = campanha.categoria || "Sem categoria";
+            const periodo = `${formatarData(campanha.data_inicio)} — ${formatarData(campanha.data_fim)}`;
+            const status = rotuloStatusCampanha(campanha.status);
+            workspaceMeta.textContent = `${categoria} · ${periodo} · ${status}`;
         }
 
 
@@ -405,7 +454,7 @@ async function carregarCampanha() {
         );
 
 
-        alert(
+        window.ShiverUI?.notifyError(
             error.message ||
             "Não foi possível carregar a campanha."
         );
@@ -425,12 +474,12 @@ async function carregarCampanha() {
 // ======================================================
 
 const PRONTIDAO_ITENS = [
-    { id: "informacoes", label: "Informações" },
-    { id: "visao_geral", label: "Visão geral" },
-    { id: "copies", label: "Copies" },
-    { id: "regras", label: "Regras" },
-    { id: "materiais", label: "Materiais" },
-    { id: "angulos", label: "Ângulos" }
+    { id: "informacoes", label: "Informações básicas", match: /título|data de início|data de fim/i },
+    { id: "banner", label: "Banner", match: /banner/i },
+    { id: "visao_geral", label: "Visão geral", match: /visão geral/i },
+    { id: "copies", label: "Copies", match: /copies/i },
+    { id: "regras", label: "Regras", match: /regras/i },
+    { id: "materiais", label: "Materiais", match: /materiais/i }
 ];
 
 function escaparHtmlProntidao(valor) {
@@ -509,7 +558,7 @@ function renderProntidaoPublicacao(campanha) {
 
     if (pronta === true) {
         root.classList.add("campanha-prontidao--pronta");
-        titleEl.textContent = "PRONTA PARA PUBLICAÇÃO";
+        titleEl.textContent = "100% pronta para publicação";
         badgeEl.textContent = "PRONTA";
 
         if (messageEl) {
@@ -539,7 +588,7 @@ function renderProntidaoPublicacao(campanha) {
 
     if (pronta === false) {
         root.classList.add("campanha-prontidao--pendente");
-        titleEl.textContent = "CAMPANHA INCOMPLETA";
+        titleEl.textContent = "Campanha incompleta";
         badgeEl.textContent = "PENDENTE";
 
         if (messageEl) {
@@ -548,17 +597,26 @@ function renderProntidaoPublicacao(campanha) {
                 "Existem itens que precisam ser preenchidos antes da publicação.";
         }
 
-        // Sem estados individuais da API: checklist preparado, estado geral "a revisar"
+        // Checklist visual a partir das pendências da API (sem nova regra).
         if (checklistEl) {
+            const pendenciasChecklist = extrairPendenciasProntidao(campanha);
+            const textoPendencias = pendenciasChecklist.join(" ").toLowerCase();
             checklistEl.hidden = false;
-            checklistEl.innerHTML = PRONTIDAO_ITENS.map((item) => `
-                <div class="prontidao-item prontidao-item--pending" data-item="${escaparHtmlProntidao(item.id)}">
+            checklistEl.innerHTML = PRONTIDAO_ITENS.map((item) => {
+                const ok = pendenciasChecklist.length
+                    ? !item.match.test(textoPendencias)
+                    : false;
+                const estado = ok ? "ok" : "pending";
+                const icone = ok ? "fa-check" : "fa-exclamation";
+                return `
+                <div class="prontidao-item prontidao-item--${estado}" data-item="${escaparHtmlProntidao(item.id)}">
                     <span class="prontidao-item__icon" aria-hidden="true">
-                        <i class="fa-solid fa-exclamation"></i>
+                        <i class="fa-solid ${icone}"></i>
                     </span>
                     <span class="prontidao-item__label">${escaparHtmlProntidao(item.label)}</span>
                 </div>
-            `).join("");
+            `;
+            }).join("");
         }
 
         const pendencias = extrairPendenciasProntidao(campanha);
@@ -681,6 +739,7 @@ async function carregarRegras() {
                     Nenhuma regra cadastrada para esta campanha.
                 </p>
             `;
+            setConteudoCount("countRegras", 0);
 
             return;
         }
@@ -742,6 +801,8 @@ async function carregarRegras() {
             );
 
         });
+
+        setConteudoCount("countRegras", regras.length);
 
     } catch (error) {
 
@@ -829,6 +890,7 @@ async function carregarMateriais() {
                     Nenhum material cadastrado para esta campanha.
                 </p>
             `;
+            setConteudoCount("countMateriais", 0);
 
             return;
         }
@@ -854,6 +916,16 @@ async function carregarMateriais() {
 
             const tipo =
                 material.tipo || "Material";
+
+            const formato =
+                material.formato || "";
+
+            const tamanho =
+                formatarTamanhoArquivo(
+                    material.tamanho
+                    || material.size
+                    || material.tamanho_arquivo
+                );
 
 
             const url =
@@ -891,7 +963,7 @@ async function carregarMateriais() {
 
 
                     <span class="material-type">
-                        ${tipo}
+                        ${[formato, tipo, tamanho].filter(Boolean).join(" · ")}
                     </span>
 
 
@@ -903,8 +975,9 @@ async function carregarMateriais() {
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     class="btn-material"
+                                    download
                                 >
-                                    Abrir material
+                                    Baixar
                                 </a>
                             `
                             : ""
@@ -921,6 +994,7 @@ async function carregarMateriais() {
 
         });
 
+        setConteudoCount("countMateriais", materiais.length);
 
     } catch (error) {
 
@@ -1095,6 +1169,7 @@ async function carregarCopies() {
                     Nenhuma copy cadastrada para esta campanha.
                 </p>
             `;
+            setConteudoCount("countCopies", 0);
             return;
         }
 
@@ -1120,6 +1195,8 @@ async function carregarCopies() {
             `;
             copiesContainer.appendChild(card);
         });
+
+        setConteudoCount("countCopies", copies.length);
     } catch (error) {
         console.error("Erro ao carregar copies:", error);
         copiesContainer.innerHTML = `
@@ -1166,6 +1243,7 @@ async function carregarKit() {
                     Nenhum item de kit cadastrado. Você ainda pode baixar o pacote completo.
                 </p>
             `;
+            setConteudoCount("countKits", 0);
             return;
         }
 
@@ -1176,17 +1254,31 @@ async function carregarKit() {
             card.className = "kit-item";
             const nome =
                 item.nome || item.titulo || item.arquivo || "Arquivo do kit";
+            const descricao =
+                item.descricao || item.tipo || "Item do kit";
+            const formato =
+                item.formato || item.tipo || item.extensao || "";
+            const tamanho = formatarTamanhoArquivo(
+                item.tamanho || item.size || item.tamanho_arquivo
+            );
+            const url = item.url || item.arquivo_url || "";
             card.innerHTML = `
                 <div class="kit-item__icon">
                     <i class="fa-solid fa-file-zipper"></i>
                 </div>
                 <div class="kit-item__body">
                     <h3>${escaparHtmlDetalhe(nome)}</h3>
-                    <p>${escaparHtmlDetalhe(item.tipo || item.descricao || "Item do kit")}</p>
+                    <p>${escaparHtmlDetalhe(descricao)}</p>
+                    <small>${escaparHtmlDetalhe([formato, tamanho].filter(Boolean).join(" · ") || "Arquivo do kit")}</small>
+                </div>
+                <div class="kit-item__actions">
+                    ${url ? `<a class="btn-kit-file" href="${escaparHtmlDetalhe(url)}" download>Baixar arquivo individual</a>` : ""}
                 </div>
             `;
             kitContainer.appendChild(card);
         });
+
+        setConteudoCount("countKits", kits.length);
     } catch (error) {
         console.error("Erro ao carregar kit:", error);
         kitContainer.innerHTML = `
@@ -1301,6 +1393,186 @@ document.addEventListener(
     }
 );
 // ======================================================
+// HISTÓRICO / AUDITORIA
+// ======================================================
+
+function rotuloAcaoHistorico(acao) {
+    const valor = String(acao || "").trim().toLowerCase();
+    if (valor === "criada") return "Campanha criada";
+    if (valor === "atualizada") return "Campanha atualizada";
+    if (valor === "excluída" || valor === "excluida") return "Campanha excluída";
+    return acao || "Evento";
+}
+
+function formatarDataHoraHistorico(valor) {
+    if (!valor) return "—";
+
+    const data = new Date(valor);
+    if (Number.isNaN(data.getTime())) return String(valor);
+
+    const dataFmt = new Intl.DateTimeFormat("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        timeZone: "America/Sao_Paulo"
+    }).format(data);
+
+    const horaFmt = new Intl.DateTimeFormat("pt-BR", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+        timeZone: "America/Sao_Paulo"
+    }).format(data);
+
+    return `${dataFmt} às ${horaFmt}`;
+}
+
+function formatarValorHistorico(valor) {
+    if (valor === null || valor === undefined || valor === "") {
+        return "—";
+    }
+
+    if (Array.isArray(valor)) {
+        return valor.filter(Boolean).join(", ") || "—";
+    }
+
+    if (typeof valor === "object") {
+        try {
+            return JSON.stringify(valor);
+        } catch {
+            return String(valor);
+        }
+    }
+
+    const texto = String(valor);
+    if (/^\d{4}-\d{2}-\d{2}/.test(texto)) {
+        const [ano, mes, dia] = texto.slice(0, 10).split("-");
+        return `${dia}/${mes}/${ano}`;
+    }
+
+    return texto;
+}
+
+function emailDoEventoHistorico(evento) {
+    const meta = evento?.metadata && typeof evento.metadata === "object"
+        ? evento.metadata
+        : {};
+    return meta.usuario_email || meta.email || "";
+}
+
+function camposDoEventoHistorico(evento) {
+    const meta = evento?.metadata && typeof evento.metadata === "object"
+        ? evento.metadata
+        : {};
+
+    if (Array.isArray(meta.campos)) {
+        return meta.campos;
+    }
+
+    return [];
+}
+
+async function carregarHistorico() {
+    const container = document.querySelector("#historicoContainer");
+    if (!container || !campanhaId) return;
+
+    container.innerHTML = `
+        <p class="detail-empty">Carregando histórico...</p>
+    `;
+
+    try {
+        const headers = typeof getAuthHeaders === "function"
+            ? await getAuthHeaders()
+            : {};
+
+        const resposta = await fetch(
+            `${API}/api/campanhas/historico/${campanhaId}`,
+            { headers }
+        );
+
+        const dados = await resposta.json().catch(() => ({}));
+
+        if (resposta.status === 401) {
+            container.innerHTML = `
+                <p class="detail-empty error-materials">
+                    Faça login no admin para consultar o histórico.
+                </p>
+            `;
+            return;
+        }
+
+        if (!resposta.ok) {
+            throw new Error(
+                dados.erro || dados.error || "Erro ao carregar histórico."
+            );
+        }
+
+        const lista = Array.isArray(dados.historico) ? dados.historico : [];
+
+        if (!lista.length) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <strong>Nenhum evento registrado ainda.</strong>
+                    As alterações desta campanha aparecerão aqui.
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = lista.map((evento) => {
+            const campos = camposDoEventoHistorico(evento);
+            const email = emailDoEventoHistorico(evento);
+            const camposHtml = campos.map((item) => {
+                const label = item.label || item.campo || "Campo";
+                const acao = String(evento.acao || "").toLowerCase();
+                const soDepois = acao === "criada" || acao === "excluída" || acao === "excluida";
+                const valorExibido = soDepois ? item.depois : item.depois;
+
+                if (soDepois && (valorExibido === null || valorExibido === undefined || valorExibido === "")) {
+                    return "";
+                }
+
+                if (soDepois) {
+                    return `
+                        <div class="historico-campo">
+                            <strong>${escaparHtmlDetalhe(label)}</strong>
+                            <p>${escaparHtmlDetalhe(formatarValorHistorico(item.depois))}</p>
+                        </div>
+                    `;
+                }
+
+                return `
+                    <div class="historico-campo">
+                        <strong>${escaparHtmlDetalhe(label)}</strong>
+                        <p>Antes: ${escaparHtmlDetalhe(formatarValorHistorico(item.antes))}</p>
+                        <p>Depois: ${escaparHtmlDetalhe(formatarValorHistorico(item.depois))}</p>
+                    </div>
+                `;
+            }).join("");
+
+            return `
+                <article class="historico-item">
+                    <h3>${escaparHtmlDetalhe(rotuloAcaoHistorico(evento.acao))}</h3>
+                    <p class="historico-item__meta">
+                        ${escaparHtmlDetalhe(formatarDataHoraHistorico(evento.created_at))}
+                        ${email ? `<span>${escaparHtmlDetalhe(email)}</span>` : ""}
+                    </p>
+                    ${camposHtml}
+                </article>
+            `;
+        }).join("");
+    } catch (error) {
+        console.error("Erro ao carregar histórico:", error);
+        container.innerHTML = `
+            <p class="detail-empty error-materials">
+                Não foi possível carregar o histórico.
+            </p>
+        `;
+    }
+}
+
+
+// ======================================================
 // INICIAR
 // ======================================================
 
@@ -1317,5 +1589,7 @@ if (campanhaId) {
     carregarCopies();
 
     carregarKit();
+
+    carregarHistorico();
 
 }

@@ -39,6 +39,7 @@
    RESPONSIVE
 ================================================== */
 
+@import url("abstracts/premium.css");
 @import url("responsive/responsive.css");
 
 /* ==================================================
@@ -54,7 +55,10 @@ body {
     position: relative;
     isolation: isolate;
     font-family: var(--font-sans);
-    background: #000;
+    background:
+        radial-gradient(ellipse 70% 50% at 8% -10%, rgba(201, 176, 122, 0.08), transparent 52%),
+        radial-gradient(ellipse 55% 45% at 100% 0%, rgba(61, 90, 154, 0.18), transparent 48%),
+        #05070c;
     color: var(--text);
     overflow-x: clip;
     min-height: 100vh;
@@ -71,12 +75,30 @@ body::before {
     background-size: 180px 180px;
 }
 
-h1, h2, h3, h4 {
-    font-family: var(--font-display);
+h1,
+.hero__intro h1,
+.hero__content h1,
+.section-header h2,
+.highlight__header h2,
+.calendar-section__header h2,
+.support__header h2,
+.site-loader__brand {
+    font-family: var(--font-title);
+    letter-spacing: -0.02em;
+}
+
+h2,
+h3,
+h4,
+.section-tag,
+.highlight__eyebrow,
+.calendar-section__eyebrow,
+.support .section-tag {
+    font-family: var(--font-subtitle);
     letter-spacing: -0.02em;
 }
 
 ::selection {
-    background: rgba(59, 130, 246, 0.35);
-    color: #fff;
+    background: rgba(201, 176, 122, 0.35);
+    color: #14110c;
 }

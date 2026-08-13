@@ -1,148 +1,79 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Shiver Admin - Dashboard</title>
-
-    <link rel="stylesheet" href="../css/admin/dashboard.css">
-    <link rel="stylesheet" href="../css/admin/admin-theme.css">
+    <title>Dashboard — Shiver Admin</title>
+    <link rel="stylesheet" href="../css/admin/admin-theme.css?v=20260813saas">
+    <link rel="stylesheet" href="../css/admin/campanhas-board.css?v=20260813saas">
     <link rel="stylesheet" href="../css/admin/notificacoes-admin.css">
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-
+    <link rel="stylesheet" href="../css/admin/admin-saas.css?v=20260813saas">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
+<body class="admin-board saas-app" data-saas-page="dashboard">
 
+    <aside class="admin-sidebar" aria-label="Navegação"></aside>
 
-<body>
+    <div class="admin-board__main">
+        <header class="admin-topbar">
+            <h1>Dashboard</h1>
+            <div class="admin-topbar__right">
+                <a href="../index.html" class="btn-site-publico">Site público</a>
+                <button type="button" id="logoutBtn" class="admin-ghost-btn">Sair</button>
+            </div>
+        </header>
 
+        <section class="exec-grid" aria-label="Indicadores executivos">
+            <article class="exec-card">
+                <span>Campanhas</span>
+                <strong id="metricTotal">—</strong>
+            </article>
+            <article class="exec-card">
+                <span>Ativas</span>
+                <strong id="metricAtivas">—</strong>
+            </article>
+            <article class="exec-card">
+                <span>Pendentes</span>
+                <strong id="metricPendentes">—</strong>
+            </article>
+            <article class="exec-card">
+                <span>Encerradas</span>
+                <strong id="metricEncerradas">—</strong>
+            </article>
+            <article class="exec-card">
+                <span>Prontas para publicação</span>
+                <strong id="metricProntas">—</strong>
+            </article>
+        </section>
 
-    <header class="admin-header">
+        <div class="exec-split">
+            <section class="attention-card" aria-label="Atenção">
+                <h2>Atenção</h2>
+                <ul class="attention-list" id="attentionList">
+                    <li><span class="saas-skeleton" style="width:70%"></span></li>
+                </ul>
+            </section>
 
-        <h1>
-            Shiver Admin
-        </h1>
-
-        <div class="admin-header__actions">
-            <button id="logoutBtn">
-                Sair
-            </button>
-            <a href="../index.html" class="btn-site-publico">
-                Voltar para o site público
-            </a>
+            <section class="attention-card">
+                <h2>Atalhos</h2>
+                <div class="exec-shortcuts">
+                    <a href="campanhas.html">Campanhas <i class="fa-solid fa-arrow-right"></i></a>
+                    <a href="campanha-form.html">Nova campanha <i class="fa-solid fa-plus"></i></a>
+                    <a href="gerenciar-materiais.html">Materiais <i class="fa-regular fa-image"></i></a>
+                    <a href="gerenciar-copies.html">Copies <i class="fa-regular fa-file-lines"></i></a>
+                </div>
+                <p class="saas-muted" style="margin:1rem 0 0;color:#9a958c;font-size:0.8rem">
+                    Biblioteca: <span id="statMateriais">0</span> materiais ·
+                    <span id="statCopies">0</span> copies ·
+                    <span id="statVideos">0</span> vídeos
+                </p>
+            </section>
         </div>
+    </div>
 
-    </header>
-
-
-
-
-    <main class="dashboard">
-
-
-        <section class="stats">
-
-
-            <div class="stat-card">
-
-                <h3>
-                    Campanhas
-                </h3>
-
-                <strong id="campanhas">
-                    0
-                </strong>
-
-            </div>
-
-
-
-            <div class="stat-card">
-
-                <h3>
-                    Materiais
-                </h3>
-
-                <strong id="materiais">
-                    0
-                </strong>
-
-            </div>
-
-
-
-
-            <div class="stat-card">
-
-                <h3>
-                    Copies
-                </h3>
-
-                <strong id="copies">
-                    0
-                </strong>
-
-            </div>
-
-
-
-
-            <div class="stat-card">
-
-                <h3>
-                    Vídeos
-                </h3>
-
-                <strong id="videos">
-                    0
-                </strong>
-
-            </div>
-
-
-        </section>
-
-
-
-
-
-        <section class="admin-menu">
-
-
-            <button onclick="window.location.href='campanhas.html'">
-                 Gerenciar campanhas
-            </button>
-
-
-            <button onclick="window.location.href='gerenciar-materiais.html'">
-                Gerenciar materiais
-            </button>
-
-
-            <button onclick="window.location.href='gerenciar-copies.html'">
-                Gerenciar copies
-            </button>
-
-
-        </section>
-
-
-    </main>
-
-
-
-
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="./supabase-client.js"></script>
+    <script src="./admin-ui.js?v=20260813saas"></script>
     <script src="./notificacoes-admin.js?v=20260812n1"></script>
-    <script src="./dashboard.js"></script>
-
-
+    <script src="./dashboard.js?v=20260813saas"></script>
 </body>
-
 </html>

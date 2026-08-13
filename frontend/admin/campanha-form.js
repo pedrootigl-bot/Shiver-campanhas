@@ -22,6 +22,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     const salvarBtn = document.getElementById("salvarBtn");
     const pageTitle = document.getElementById("pageTitle");
 
+    function aviso(mensagem, tipo = "warn") {
+        if (window.ShiverUI) {
+            if (tipo === "ok") window.ShiverUI.notifyOk(mensagem);
+            else if (tipo === "error") window.ShiverUI.notifyError(mensagem);
+            else window.ShiverUI.notifyWarn(mensagem);
+            return;
+        }
+        window.alert(mensagem);
+    }
+
     if (!form) {
         console.error("Formulário #campanhaForm não encontrado.");
         return;
@@ -925,8 +935,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                     <div class="material-upload-main">
                         <div class="upload-dropzone__empty material-upload-empty"${urlAtual ? " hidden" : ""}>
                             <i class="fa-solid fa-cloud-arrow-up"></i>
-                            <p>Arraste e solte um ou vários arquivos aqui</p>
-                            <span>Imagens, vídeos ou arquivos · máx. 50 MB cada · múltiplos permitidos</span>
+                            <p>Arraste seu arquivo aqui</p>
+                            <span>ou clique para selecionar · imagens, vídeos ou arquivos · máx. 50 MB cada</span>
                             <button type="button" class="material-btn material-btn--secondary material-upload-select">
                                 <i class="fa-solid fa-folder-open"></i>
                                 Selecionar arquivo(s)
@@ -1320,22 +1330,22 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     function validarCampanha(dados) {
         if (!dados.titulo) {
-            alert("Digite o título da campanha.");
+            aviso("Digite o título da campanha.");
             return false;
         }
 
         if (!dados.data_inicio) {
-            alert("Informe a data de início.");
+            aviso("Informe a data de início.");
             return false;
         }
 
         if (!dados.data_fim) {
-            alert("Informe a data de fim.");
+            aviso("Informe a data de fim.");
             return false;
         }
 
         if (dados.data_fim < dados.data_inicio) {
-            alert("A data de fim não pode ser anterior à data de início.");
+            aviso("A data de fim não pode ser anterior à data de início.");
             return false;
         }
 
@@ -1348,12 +1358,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             const n = i + 1;
 
             if (!copy.titulo) {
-                alert(`Digite o título do Copy ${n}.`);
+                aviso(`Digite o título do Copy ${n}.`);
                 return false;
             }
 
             if (!copy.texto) {
-                alert(`Digite o texto do Copy ${n}.`);
+                aviso(`Digite o texto do Copy ${n}.`);
                 return false;
             }
         }
@@ -1367,7 +1377,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const n = i + 1;
 
             if (!regra.titulo && !regra.descricao) {
-                alert(`Preencha a Regra ${n}.`);
+                aviso(`Preencha a Regra ${n}.`);
                 return false;
             }
 
@@ -1386,12 +1396,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             const n = i + 1;
 
             if (!material.nome) {
-                alert(`Digite o nome do Material ${n}.`);
+                aviso(`Digite o nome do Material ${n}.`);
                 return false;
             }
 
             if (!material.formato) {
-                alert(`Selecione o formato da postagem do Material ${n}.`);
+                aviso(`Selecione o formato da postagem do Material ${n}.`);
                 return false;
             }
         }
@@ -1816,9 +1826,11 @@ document.addEventListener("DOMContentLoaded", async () => {
             submitButton.textContent = isEditando ? "Salvando..." : "Criando...";
         }
 
+        let salvou = false;
+
         try {
             if (uploadImagemEmAndamento || uploadMaterialEmAndamento > 0) {
-                alert("Aguarde o envio dos arquivos terminar.");
+                aviso("Aguarde o envio dos arquivos terminar.");
                 return;
             }
 
@@ -1887,18 +1899,25 @@ document.addEventListener("DOMContentLoaded", async () => {
                 await sincronizarMateriais(idCriado, materiais);
             }
 
-            alert(
+            salvou = true;
+            aviso(
                 isEditando
-                    ? "Campanha atualizada com sucesso!"
-                    : "Campanha criada com sucesso!"
+                    ? "✓ Alterações salvas"
+                    : "✓ Campanha publicada",
+                "ok"
             );
 
+            if (submitButton) {
+                submitButton.innerHTML = "✓ Alterações salvas";
+            }
+
+            await new Promise((resolve) => window.setTimeout(resolve, 650));
             irParaCampanhas();
         } catch (error) {
             console.error("Erro ao salvar campanha:", error);
-            alert(error.message || "Erro ao salvar campanha.");
+            aviso(error.message || "Erro ao salvar campanha.", "error");
         } finally {
-            if (submitButton) {
+            if (!salvou && submitButton) {
                 submitButton.disabled = false;
                 submitButton.innerHTML =
                     textoOriginal ||
@@ -1912,7 +1931,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (isEditando) {
         carregarCampanhaParaEdicao().catch((error) => {
             console.error(error);
-            alert(error.message || "Erro ao carregar campanha.");
+            aviso(error.message || "Erro ao carregar campanha.", "error");
             irParaCampanhas();
         });
     } else {

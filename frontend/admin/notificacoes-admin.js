@@ -271,7 +271,7 @@
             atualizarBadge(cache.filter((n) => !n.lida).length);
         } catch (error) {
             console.error("Erro ao marcar notificação:", error);
-            window.alert(error.message || "Erro ao marcar notificação como lida.");
+            window.ShiverUI?.notifyError(error.message || "Erro ao marcar notificação como lida.");
         }
     }
 

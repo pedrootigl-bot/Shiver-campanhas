@@ -168,6 +168,7 @@
     opacity: 0;
     overflow: hidden;
     white-space: nowrap;
+    font-family: var(--font-sans);
     font-size: 13px;
     font-weight: 600;
     line-height: 1;

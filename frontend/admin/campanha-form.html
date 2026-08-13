@@ -9,12 +9,17 @@
     <link rel="stylesheet" href="../css/admin/admin.css">
     <link rel="stylesheet" href="../css/admin/campanha-form.css?v=20260813azul">
     <link rel="stylesheet" href="../css/admin/admin-theme.css">
+    <link rel="stylesheet" href="../css/admin/campanhas-board.css?v=20260813saas">
     <link rel="stylesheet" href="../css/admin/notificacoes-admin.css">
+    <link rel="stylesheet" href="../css/admin/admin-saas.css?v=20260813saas">
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
 
-<body>
+<body class="admin-board saas-app page-campanha-form" data-saas-page="campanhas">
+
+    <aside class="admin-sidebar" aria-label="Navegação"></aside>
+    <div class="admin-board__main">
 
     <header class="admin-header">
         <div class="admin-header__left">
@@ -194,8 +199,8 @@
 
                             <div class="upload-dropzone__empty" id="imagemCardEmpty">
                                 <i class="fa-solid fa-cloud-arrow-up"></i>
-                                <p>Arraste e solte a imagem aqui</p>
-                                <span>PNG, JPG ou WEBP · máx. 5 MB</span>
+                                <p>Arraste seu arquivo aqui</p>
+                                <span>ou clique para selecionar · PNG, JPG ou WEBP · máx. 5 MB</span>
                                 <button type="button" id="imagemCardSelectBtn" class="btn-secondary">
                                     Selecionar imagem
                                 </button>
@@ -376,11 +381,13 @@
         </form>
 
     </main>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="./supabase-client.js"></script>
+    <script src="./admin-ui.js?v=20260813saas"></script>
     <script src="./notificacoes-admin.js?v=20260812n1"></script>
-    <script src="./campanha-form.js?v=20260812m4"></script>
+    <script src="./campanha-form.js?v=20260813saas"></script>
 
 </body>
 

@@ -28,6 +28,7 @@ const materialSalvarBtn = document.querySelector("#materialSalvarBtn");
 let campanhaSelecionada = null;
 let campanhasCache = [];
 let materiaisCache = [];
+let filtroFormato = "todos";
 let uploadEmAndamento = false;
 
 function escaparHtml(valor) {
@@ -138,6 +139,20 @@ function inferirTipoArquivo(material = {}) {
     return "arquivo";
 }
 
+function formatarTamanhoArquivo(valor) {
+    const n = Number(valor);
+    if (!n || n < 0) return "";
+    if (n < 1024) return `${n} B`;
+    if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)} KB`;
+    return `${(n / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function aviso(mensagem, tipo = "ok") {
+    if (tipo === "error") window.ShiverUI?.notifyError(mensagem);
+    else if (tipo === "warn") window.ShiverUI?.notifyWarn(mensagem);
+    else window.ShiverUI?.notifyOk(mensagem);
+}
+
 function mostrarEstado(el, mensagem, tipo = "") {
     if (!el) return;
     el.hidden = !mensagem;
@@ -182,6 +197,9 @@ function mostrarPreviewArquivo(url, nomeArquivo = "") {
         materialFileName.textContent =
             nomeArquivo || nomeArquivoDeUrl(url) || "arquivo";
     }
+
+    const sizeEl = document.querySelector("#materialFileSize");
+    if (sizeEl) sizeEl.textContent = "";
 
     if (empty) empty.hidden = Boolean(url);
     if (preview) preview.hidden = !url;
@@ -258,7 +276,7 @@ async function carregarCampanhasAtivas() {
             campanhasGrid.innerHTML = "";
             mostrarEstado(
                 campanhasState,
-                "Nenhuma campanha ativa no momento."
+                "Não existem campanhas ativas ainda. Crie sua primeira campanha para começar."
             );
             return;
         }
@@ -295,6 +313,9 @@ function renderMaterialCard(material) {
     const tipo = inferirTipoArquivo(material);
     const url = material.url || "";
     const descricao = material.descricao || material.descricao_material || "";
+    const tamanho = formatarTamanhoArquivo(
+        material.tamanho || material.size || material.tamanho_arquivo
+    );
     const preview = ehUrlImagem(url)
         ? `<img src="${escaparHtml(url)}" alt="${escaparHtml(nome)}">`
         : `<i class="fa-regular fa-file"></i>`;
@@ -305,7 +326,7 @@ function renderMaterialCard(material) {
             <h3>${escaparHtml(nome)}</h3>
             ${descricao ? `<p>${escaparHtml(descricao)}</p>` : ""}
             <p>Arquivo: ${escaparHtml(nomeArquivoDeUrl(url) || "—")}</p>
-            <span class="gm-material-card__type">${escaparHtml(labelFormato(formato))} · ${escaparHtml(tipo)}</span>
+            <span class="gm-material-card__type">${escaparHtml(labelFormato(formato))} · ${escaparHtml(tipo)}${tamanho ? ` · ${escaparHtml(tamanho)}` : ""}</span>
         </div>
         <div class="gm-material-card__actions">
             <button type="button" class="gm-btn gm-btn--sm gm-btn--view" data-action="visualizar" ${url ? "" : "disabled"}>
@@ -364,6 +385,7 @@ async function carregarMateriaisCampanha(campanha) {
             materiaisState.className = "gm-state";
             materiaisState.innerHTML = `
                 <p>Esta campanha ainda não possui materiais cadastrados.</p>
+                <small>Adicione o primeiro material para começar.</small>
                 <div class="gm-empty-actions">
                     <button type="button" class="gm-btn gm-btn--primary" id="emptyAddMaterialBtn">
                         <i class="fa-solid fa-plus"></i>
@@ -378,9 +400,7 @@ async function carregarMateriaisCampanha(campanha) {
         }
 
         mostrarEstado(materiaisState, "");
-        materiaisCache.forEach((material) => {
-            materiaisLista.appendChild(renderMaterialCard(material));
-        });
+        renderListaMateriais();
     } catch (error) {
         console.error("Erro ao carregar materiais:", error);
         materiaisLista.innerHTML = "";
@@ -390,6 +410,31 @@ async function carregarMateriaisCampanha(campanha) {
             "is-error"
         );
     }
+}
+
+function renderListaMateriais() {
+    if (!materiaisLista) return;
+
+    const lista = filtroFormato === "todos"
+        ? materiaisCache
+        : materiaisCache.filter((item) => inferirFormatoLegado(item) === filtroFormato);
+
+    materiaisLista.innerHTML = "";
+
+    if (!lista.length) {
+        materiaisState.hidden = false;
+        materiaisState.className = "gm-state";
+        materiaisState.innerHTML = `
+            <p>Não existem materiais neste formato ainda.</p>
+            <small>Altere o filtro ou adicione um novo material.</small>
+        `;
+        return;
+    }
+
+    mostrarEstado(materiaisState, "");
+    lista.forEach((material) => {
+        materiaisLista.appendChild(renderMaterialCard(material));
+    });
 }
 
 function mostrarViewCampanhas() {
@@ -497,6 +542,8 @@ async function processarUploadArquivo(file) {
         }
 
         mostrarPreviewArquivo(url, file.name || resultado.nomeOriginal);
+        const sizeEl = document.querySelector("#materialFileSize");
+        if (sizeEl) sizeEl.textContent = formatarTamanhoArquivo(file.size);
         setStatusUpload("Arquivo enviado com sucesso.", "is-success");
     } catch (error) {
         console.error("Erro no upload:", error);
@@ -578,6 +625,7 @@ async function salvarMaterial(event) {
         }
 
         fecharModalMaterial();
+        aviso("✓ Alterações salvas");
         await carregarMateriaisCampanha(campanhaSelecionada);
     } catch (error) {
         console.error("Erro ao salvar material:", error);
@@ -614,9 +662,10 @@ async function excluirMaterial(material) {
         }
 
         await carregarMateriaisCampanha(campanhaSelecionada);
+        aviso("Item removido");
     } catch (error) {
         console.error("Erro ao excluir material:", error);
-        window.alert(error.message || "Erro ao excluir material.");
+        aviso(error.message || "Erro ao excluir material.", "error");
     }
 }
 
@@ -700,7 +749,7 @@ async function baixarArquivo(material, botao) {
             setTimeout(() => URL.revokeObjectURL(objectUrl), 1500);
         } catch (fallbackError) {
             console.error("Erro ao baixar arquivo:", fallbackError);
-            window.alert("Não foi possível baixar o arquivo. Tente novamente.");
+        window.ShiverUI?.notifyError("Não foi possível baixar o arquivo. Tente novamente.");
         }
     } finally {
         if (botao) {
@@ -738,7 +787,7 @@ campanhasGrid?.addEventListener("click", (event) => {
 
     const campanha = campanhasCache.find((item) => Number(item.id) === id);
     if (!campanha) {
-        window.alert("Não foi possível abrir a campanha.");
+        window.ShiverUI?.notifyError("Não foi possível abrir a campanha.");
         return;
     }
 
@@ -819,6 +868,33 @@ async function iniciar() {
     const session = await requireAdminSession();
     if (!session) return;
     await carregarCampanhasAtivas();
+
+    const id = new URLSearchParams(window.location.search).get("id");
+    if (!id) return;
+
+    let campanha = campanhasCache.find((item) => String(item.id) === String(id));
+    if (!campanha) {
+        try {
+            const resposta = await fetch(`${API}/api/campanhas/${id}`);
+            if (resposta.ok) campanha = await resposta.json();
+        } catch (error) {
+            console.error("Erro ao abrir campanha pelos materiais:", error);
+        }
+    }
+
+    if (campanha?.id) mostrarViewMateriais(campanha);
 }
+
+document.querySelector("#materiaisFiltros")?.addEventListener("click", (event) => {
+    const botao = event.target.closest("[data-formato]");
+    if (!botao) return;
+
+    filtroFormato = botao.dataset.formato || "todos";
+    document.querySelectorAll("#materiaisFiltros .saas-filter").forEach((item) => {
+        item.classList.toggle("is-active", item === botao);
+    });
+
+    if (campanhaSelecionada) renderListaMateriais();
+});
 
 iniciar();

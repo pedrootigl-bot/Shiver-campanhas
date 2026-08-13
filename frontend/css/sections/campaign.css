@@ -18,11 +18,13 @@
     letter-spacing: 0.14em;
     color: var(--primary);
     font-weight: 700;
+    font-family: var(--font-subtitle);
     margin-bottom: 0.7rem;
     text-transform: uppercase;
 }
 
 .section-header h2 {
+    font-family: var(--font-title);
     font-size: clamp(1.7rem, 3.5vw, 2.25rem);
     margin: 0;
     font-weight: 800;

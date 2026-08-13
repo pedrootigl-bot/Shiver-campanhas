@@ -108,6 +108,7 @@ html.is-loading body {
 .site-loader__brand {
     margin: 0;
     color: #fff;
+    font-family: var(--font-title);
     font-size: clamp(1.8rem, 5vw, 2.4rem);
     font-weight: 800;
     letter-spacing: 0.28em;
@@ -119,6 +120,7 @@ html.is-loading body {
 .site-loader__sub {
     margin: 0 0 1.1rem;
     color: #3b82f6;
+    font-family: var(--font-subtitle);
     font-size: 0.78rem;
     font-weight: 700;
     letter-spacing: 0.22em;

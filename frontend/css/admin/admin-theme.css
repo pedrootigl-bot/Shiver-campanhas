@@ -3,7 +3,7 @@
    Carregar por último nas páginas admin
 ====================================================== */
 
-@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Exo+2:wght@500;600;700;800&family=Montserrat:wght@500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap");
 
 :root {
     --admin-bg-0: #000000;
@@ -23,7 +23,9 @@
     --admin-danger: #f87171;
     --admin-radius: 16px;
     --admin-shadow: 0 18px 48px rgba(0, 0, 0, 0.35);
-    --admin-font: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+    --admin-font: "Poppins", sans-serif;
+    --admin-font-title: "Exo 2", sans-serif;
+    --admin-font-subtitle: "Montserrat", sans-serif;
 }
 
 html {
@@ -41,6 +43,17 @@ body {
         radial-gradient(ellipse 50% 40% at 70% 100%, rgba(29, 78, 216, 0.12), transparent 55%),
         linear-gradient(160deg, var(--admin-bg-0) 0%, var(--admin-bg-1) 28%, var(--admin-bg-2) 62%, var(--admin-bg-3) 100%);
     background-attachment: fixed;
+}
+
+h1 {
+    font-family: var(--admin-font-title);
+}
+
+h2, h3, h4,
+.form-section__header h2,
+.form-section h2,
+.login-kicker {
+    font-family: var(--admin-font-subtitle);
 }
 
 /* Header */
@@ -67,6 +80,7 @@ body {
 .admin-header__left h1,
 #pageTitle {
     color: #f8fafc !important;
+    font-family: var(--admin-font-title) !important;
     font-weight: 800;
     letter-spacing: -0.03em;
 }

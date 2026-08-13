@@ -11,11 +11,12 @@
     <link rel="stylesheet" href="../css/admin/campanha-form.css">
     <link rel="stylesheet" href="../css/admin/gerenciar-materiais.css">
     <link rel="stylesheet" href="../css/admin/notificacoes-admin.css">
+    <link rel="stylesheet" href="../css/admin/admin-saas.css?v=20260813saas">
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
 
-<body class="admin-board gm-page">
+<body class="admin-board gm-page saas-app" data-saas-page="materiais">
 
     <aside class="admin-sidebar">
         <a href="dashboard.html" class="admin-sidebar__brand">
@@ -78,6 +79,14 @@
                 </button>
             </div>
 
+            <div class="saas-filters" id="materiaisFiltros" role="tablist" aria-label="Filtrar materiais por formato">
+                <button type="button" class="saas-filter is-active" data-formato="todos">Todos</button>
+                <button type="button" class="saas-filter" data-formato="stories">Stories</button>
+                <button type="button" class="saas-filter" data-formato="feed">Feed</button>
+                <button type="button" class="saas-filter" data-formato="videos">Vídeos</button>
+                <button type="button" class="saas-filter" data-formato="banners">Banners</button>
+            </div>
+
             <div id="materiaisState" class="gm-state" hidden></div>
             <div id="materiaisLista" class="gm-materials-list"></div>
         </section>
@@ -130,8 +139,8 @@
                 <div class="upload-dropzone material-upload-dropzone" id="materialDropzone">
                     <div class="upload-dropzone__empty material-upload-empty">
                         <i class="fa-solid fa-cloud-arrow-up"></i>
-                        <p>Arraste e solte o arquivo aqui</p>
-                        <span>Imagens, vídeos ou arquivos · máx. 50 MB</span>
+                        <p>Arraste seu arquivo aqui</p>
+                        <span>ou clique para selecionar · imagens, vídeos ou arquivos · máx. 50 MB</span>
                         <button type="button" class="gm-btn gm-btn--secondary material-upload-select">
                             <i class="fa-solid fa-folder-open"></i>
                             Selecionar arquivo
@@ -149,6 +158,7 @@
                             <strong class="material-upload-filename" id="materialFileName">
                                 arquivo
                             </strong>
+                            <small id="materialFileSize" class="gm-material-card__meta"></small>
                             <div class="upload-dropzone__actions">
                                 <button type="button" class="gm-btn gm-btn--secondary material-upload-replace">
                                     <i class="fa-solid fa-arrows-rotate"></i>
@@ -180,8 +190,9 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="./supabase-client.js"></script>
+    <script src="./admin-ui.js?v=20260813saas"></script>
     <script src="./notificacoes-admin.js?v=20260812n1"></script>
-    <script src="./gerenciar-materiais.js"></script>
+    <script src="./gerenciar-materiais.js?v=20260813saas"></script>
 
 </body>
 

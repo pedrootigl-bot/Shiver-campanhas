@@ -21,8 +21,7 @@ body {
     min-height: 100vh;
 
     font-family:
-        Arial,
-        Helvetica,
+        "Poppins",
         sans-serif;
 
     color: #1f2937;
@@ -123,6 +122,7 @@ body {
 
     color: #111827;
 
+    font-family: "Exo 2", sans-serif;
     font-size: 30px;
     font-weight: 800;
 

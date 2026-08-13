@@ -428,9 +428,10 @@ function bindRowActions(row, campanha) {
             }
 
             await carregarCampanhas();
+            window.ShiverUI?.notifyOk("Item removido");
         } catch (error) {
             console.error("Erro ao excluir campanha:", error);
-            alert(error.message || "Não foi possível excluir a campanha.");
+            window.ShiverUI?.notifyError(error.message || "Não foi possível excluir a campanha.");
             btnExcluir.disabled = false;
         }
     });
@@ -496,8 +497,9 @@ function renderizarTabela(campanhas) {
                         <p>${
                             temFiltro
                                 ? "Nenhuma campanha encontrada para esta busca."
-                                : "Nenhuma campanha encontrada."
+                                : "Não existem campanhas cadastradas ainda."
                         }</p>
+                        ${temFiltro ? "" : "<small>Crie sua primeira campanha para começar.</small>"}
                     </div>
                 </td>
             </tr>
@@ -727,7 +729,7 @@ function abrirCampanhaDaBusca() {
     const campanha = campanhaParaAbrirPorBusca();
 
     if (!campanha) {
-        window.alert("Nenhuma campanha encontrada para esta busca.");
+        window.ShiverUI?.notifyWarn("Nenhuma campanha encontrada para esta busca.");
         return;
     }
 
