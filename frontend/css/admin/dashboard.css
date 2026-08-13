@@ -1,0 +1,669 @@
+/* ======================================================
+   RESET
+====================================================== */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+
+/* ======================================================
+   BASE
+====================================================== */
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    min-height: 100vh;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    background:
+        linear-gradient(
+            135deg,
+            #f8fafc 0%,
+            #eef2f7 100%
+        );
+
+    color: #1f2937;
+
+    line-height: 1.5;
+}
+
+
+/* ======================================================
+   HEADER
+====================================================== */
+
+.admin-header {
+    position: sticky;
+
+    top: 0;
+
+    z-index: 100;
+
+    width: 100%;
+
+    min-height: 76px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding: 0 5%;
+
+    background:
+        rgba(255, 255, 255, 0.94);
+
+    border-bottom:
+        1px solid #e5e7eb;
+
+    box-shadow:
+        0 4px 20px rgba(15, 23, 42, 0.05);
+
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+
+/* ======================================================
+   TÍTULO
+====================================================== */
+
+.admin-header h1 {
+    color: #111827;
+
+    font-size: 25px;
+    font-weight: 800;
+
+    letter-spacing: -0.5px;
+}
+
+
+/* ======================================================
+   LOGOUT
+====================================================== */
+
+#logoutBtn {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    min-width: 85px;
+    min-height: 40px;
+
+    padding: 9px 17px;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 9px;
+
+    background: #ffffff;
+
+    color: #374151;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+#logoutBtn:hover {
+    background: #fef2f2;
+
+    border-color: #fecaca;
+
+    color: #dc2626;
+
+    transform: translateY(-1px);
+}
+
+#logoutBtn:active {
+    transform: translateY(0);
+}
+
+
+/* ======================================================
+   DASHBOARD
+====================================================== */
+
+.dashboard {
+    width: min(1200px, 92%);
+
+    margin: 45px auto 60px;
+}
+
+
+/* ======================================================
+   STATS
+====================================================== */
+
+.stats {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 20px;
+
+    margin-bottom: 42px;
+}
+
+
+/* ======================================================
+   STAT CARD
+====================================================== */
+
+.stat-card {
+    position: relative;
+
+    min-width: 0;
+
+    min-height: 150px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: space-between;
+
+    overflow: hidden;
+
+    padding: 24px;
+
+    background: #ffffff;
+
+    border:
+        1px solid #e5e7eb;
+
+    border-radius: 18px;
+
+    box-shadow:
+        0 8px 25px rgba(15, 23, 42, 0.06);
+
+    transition:
+        transform 0.22s ease,
+        box-shadow 0.22s ease,
+        border-color 0.22s ease;
+}
+
+
+/* barra superior */
+
+.stat-card::before {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 4px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #3b82f6,
+            #93c5fd
+        );
+}
+
+
+/* detalhe visual */
+
+.stat-card::after {
+    content: "";
+
+    position: absolute;
+
+    right: -35px;
+    bottom: -35px;
+
+    width: 110px;
+    height: 110px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(59, 130, 246, 0.04);
+
+    pointer-events: none;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+
+    border-color:
+        #bfdbfe;
+
+    box-shadow:
+        0 15px 35px rgba(15, 23, 42, 0.1);
+}
+
+
+/* ======================================================
+   STAT TITLE
+====================================================== */
+
+.stat-card h3 {
+    position: relative;
+
+    z-index: 1;
+
+    margin-bottom: 12px;
+
+    color: #6b7280;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.6px;
+}
+
+
+/* ======================================================
+   STAT VALUE
+====================================================== */
+
+.stat-card strong {
+    position: relative;
+
+    z-index: 1;
+
+    display: block;
+
+    min-height: 40px;
+
+    color: #111827;
+
+    font-size: clamp(
+        30px,
+        3vw,
+        38px
+    );
+
+    font-weight: 800;
+
+    line-height: 1;
+
+    letter-spacing: -1px;
+
+    /* importante para valores vindos do banco */
+    overflow-wrap: anywhere;
+}
+
+
+/* ======================================================
+   ESTADO DE CARREGAMENTO
+====================================================== */
+
+.stat-card strong.loading {
+    width: 55px;
+
+    height: 34px;
+
+    border-radius: 7px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #f1f5f9 25%,
+            #e2e8f0 50%,
+            #f1f5f9 75%
+        );
+
+    background-size: 200% 100%;
+
+    animation:
+        skeleton 1.4s infinite;
+}
+
+@keyframes skeleton {
+
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+
+/* ======================================================
+   MENU ADMINISTRATIVO
+====================================================== */
+
+.admin-menu {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 20px;
+}
+
+
+/* ======================================================
+   BOTÕES DO MENU
+====================================================== */
+
+.admin-menu button {
+    position: relative;
+
+    min-width: 0;
+    min-height: 125px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 25px 50px 25px 25px;
+
+    overflow: hidden;
+
+    border:
+        1px solid #e5e7eb;
+
+    border-radius: 18px;
+
+    background: #ffffff;
+
+    color: #1f2937;
+
+    font-size: 16px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 8px 25px rgba(15, 23, 42, 0.05);
+
+    transition:
+        transform 0.22s ease,
+        box-shadow 0.22s ease,
+        border-color 0.22s ease,
+        background 0.22s ease,
+        color 0.22s ease;
+}
+
+
+/* brilho interno */
+
+.admin-menu button::before {
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(59, 130, 246, 0.04),
+            transparent 60%
+        );
+
+    opacity: 0;
+
+    transition:
+        opacity 0.2s ease;
+}
+
+
+/* seta */
+
+.admin-menu button::after {
+    content: "→";
+
+    position: absolute;
+
+    right: 20px;
+
+    color: #3b82f6;
+
+    font-size: 21px;
+
+    opacity: 0;
+
+    transform:
+        translateX(-7px);
+
+    transition:
+        opacity 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.admin-menu button:hover {
+    transform:
+        translateY(-4px);
+
+    border-color:
+        #93c5fd;
+
+    background:
+        #f8fbff;
+
+    color:
+        #3b82f6;
+
+    box-shadow:
+        0 15px 35px rgba(59, 130, 246, 0.1);
+}
+
+
+.admin-menu button:hover::before {
+    opacity: 1;
+}
+
+.admin-menu button:hover::after {
+    opacity: 1;
+
+    transform:
+        translateX(0);
+}
+
+.admin-menu button:active {
+    transform:
+        translateY(-1px);
+}
+
+
+/* ======================================================
+   FOCUS
+====================================================== */
+
+#logoutBtn:focus-visible,
+.admin-menu button:focus-visible {
+    outline:
+        3px solid
+        rgba(59, 130, 246, 0.25);
+
+    outline-offset: 3px;
+}
+
+
+/* ======================================================
+   TABLET
+====================================================== */
+
+@media (max-width: 950px) {
+
+    .admin-header {
+        padding:
+            0 4%;
+    }
+
+    .dashboard {
+        width: 92%;
+
+        margin-top: 35px;
+    }
+
+    .stats {
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(0, 1fr)
+            );
+    }
+
+    .admin-menu {
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(0, 1fr)
+            );
+    }
+}
+
+
+/* ======================================================
+   MOBILE
+====================================================== */
+
+@media (max-width: 600px) {
+
+    .admin-header {
+        min-height: 68px;
+
+        padding:
+            0 20px;
+    }
+
+    .admin-header h1 {
+        font-size: 21px;
+    }
+
+    #logoutBtn {
+        min-width: 70px;
+
+        padding:
+            8px 13px;
+
+        font-size: 13px;
+    }
+
+    .dashboard {
+        width:
+            calc(100% - 32px);
+
+        margin:
+            25px auto 40px;
+    }
+
+    .stats {
+        grid-template-columns: 1fr;
+
+        gap: 14px;
+
+        margin-bottom: 30px;
+    }
+
+    .stat-card {
+        min-height: 125px;
+
+        padding: 22px;
+    }
+
+    .stat-card strong {
+        font-size: 32px;
+    }
+
+    .admin-menu {
+        grid-template-columns: 1fr;
+
+        gap: 14px;
+    }
+
+    .admin-menu button {
+        min-height: 82px;
+
+        justify-content: flex-start;
+
+        padding:
+            20px 55px 20px 20px;
+
+        text-align: left;
+    }
+
+    .admin-menu button::after {
+        right: 20px;
+
+        opacity: 1;
+
+        transform:
+            translateX(0);
+    }
+
+    .admin-menu button::before {
+        opacity: 1;
+    }
+}
+
+
+/* ======================================================
+   TELAS MUITO PEQUENAS
+====================================================== */
+
+@media (max-width: 380px) {
+
+    .admin-header {
+        padding:
+            0 15px;
+    }
+
+    .admin-header h1 {
+        font-size: 19px;
+    }
+
+    #logoutBtn {
+        min-width: 60px;
+
+        padding:
+            7px 10px;
+    }
+
+    .dashboard {
+        width:
+            calc(100% - 24px);
+    }
+
+    .stat-card {
+        min-height: 115px;
+
+        padding: 20px;
+    }
+
+    .stat-card strong {
+        font-size: 30px;
+    }
+
+    .admin-menu button {
+        min-height: 78px;
+
+        font-size: 15px;
+    }
+}

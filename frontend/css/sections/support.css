@@ -1,0 +1,105 @@
+/*==========================
+    SUPPORT — Partner Hub
+==========================*/
+
+.support {
+    padding: 5rem 0 5.5rem;
+    background: transparent;
+}
+
+.support__header {
+    max-width: 40rem;
+    margin-bottom: 2.5rem;
+}
+
+.support .section-tag,
+.section-tag {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: 0.14em;
+    margin-bottom: 0.85rem;
+    text-transform: uppercase;
+}
+
+.support__header h2 {
+    font-size: clamp(1.7rem, 4vw, 2.45rem);
+    color: #fff;
+    margin-bottom: 0.85rem;
+    letter-spacing: -0.025em;
+}
+
+.support__header p {
+    color: var(--text-muted);
+    line-height: 1.7;
+}
+
+.support__cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.1rem;
+}
+
+.support-card {
+    display: flex;
+    align-items: center;
+    gap: 1.1rem;
+    padding: 1.4rem;
+    background: var(--surface-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    text-decoration: none;
+    transition:
+        transform 0.28s var(--ease-out),
+        border-color 0.28s ease,
+        box-shadow 0.28s ease;
+}
+
+.support-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--border-green);
+    box-shadow:
+        0 14px 32px rgba(0, 0, 0, 0.28),
+        0 0 20px rgba(59, 130, 246, 0.08);
+}
+
+.support-card__icon {
+    width: 52px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    background: linear-gradient(180deg, #60a5fa 0%, var(--primary) 100%);
+    color: #061018;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.22);
+}
+
+.support-card h3 {
+    color: #fff;
+    margin-bottom: 0.3rem;
+    font-size: 1.05rem;
+    letter-spacing: -0.02em;
+}
+
+.support-card p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+    .support {
+        padding: 3.5rem 0;
+    }
+
+    .support__cards {
+        grid-template-columns: 1fr;
+    }
+
+    .support-card {
+        padding: 1.15rem;
+    }
+}

@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<link rel="stylesheet" href="../css/admin/admin.css">
+<link rel="stylesheet" href="../css/admin/admin-theme.css">
+<link rel="stylesheet" href="../css/admin/campanha-detalhes.css">
+<link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+<title>Detalhes da Campanha</title>
+
+
+</head>
+
+<body class="page-campanha-detalhes">
+
+<!-- ==========================================
+     CABEÇALHO
+=========================================== -->
+
+<div class="admin-header">
+
+    <h1>
+        Detalhes da Campanha
+    </h1>
+
+    <div class="admin-header__actions">
+        <button
+            type="button"
+            id="voltarBtn"
+            class="btn btn-secondary"
+        >
+            Voltar para campanhas
+        </button>
+        <a href="../index.html" class="btn-site-publico">
+            Voltar para o site público
+        </a>
+    </div>
+
+</div>
+
+
+<!-- ==========================================
+     CAMPANHA
+=========================================== -->
+
+<div class="campaign-detail-card">
+
+    <img
+        id="detail-image"
+        src=""
+        alt="Imagem da campanha"
+    >
+
+
+    <div class="detail-content">
+
+        <span
+            id="detail-category"
+        ></span>
+
+
+        <h1
+            id="detail-title"
+        ></h1>
+
+
+        <p
+            id="detail-description"
+        ></p>
+
+
+        <div class="detail-info">
+
+            <p>
+                Objetivo:
+
+                <strong
+                    id="detail-objective"
+                ></strong>
+            </p>
+
+
+            <p>
+                Prêmio:
+
+                <strong
+                    id="detail-prize"
+                ></strong>
+            </p>
+
+
+            <p>
+                Cupom:
+
+                <strong
+                    id="detail-coupon"
+                ></strong>
+            </p>
+
+
+            <p>
+                Depósito mínimo:
+
+                <strong
+                    id="detail-minimum"
+                ></strong>
+            </p>
+
+
+            <p>
+                Início:
+
+                <span
+                    id="detail-start"
+                ></span>
+            </p>
+
+
+            <p>
+                Encerramento:
+
+                <span
+                    id="detail-end"
+                ></span>
+            </p>
+
+
+            <p>
+                Status:
+
+                <strong
+                    id="detail-status"
+                ></strong>
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ==========================================
+     BLOCOS DE CONTEÚDO DA CAMPANHA
+=========================================== -->
+
+<div class="campaign-sections">
+
+<section
+    class="campanha-prontidao"
+    id="campanhaProntidao"
+    aria-live="polite"
+>
+    <div class="campanha-prontidao__header">
+        <div class="campanha-prontidao__heading">
+            <span class="campanha-prontidao__eyebrow">
+                Status da publicação
+            </span>
+            <h3 class="campanha-prontidao__title" id="prontidaoTitle">
+                Verificando informações...
+            </h3>
+            <p class="campanha-prontidao__message" id="prontidaoMessage" hidden></p>
+        </div>
+        <span class="campanha-prontidao__badge" id="prontidaoBadge">
+            —
+        </span>
+    </div>
+
+    <div class="campanha-prontidao__checklist" id="prontidaoChecklist" hidden>
+        <!-- preenchido via JS -->
+    </div>
+
+    <div class="campanha-prontidao__pendencias" id="prontidaoPendencias" hidden>
+        <h4 class="campanha-prontidao__pendencias-title">Pendências</h4>
+        <p class="campanha-prontidao__pendencias-text" id="prontidaoPendenciasText"></p>
+        <ul class="campanha-prontidao__pendencias-list" id="prontidaoPendenciasList" hidden></ul>
+    </div>
+</section>
+
+<section class="detail-panel campaign-rules" id="campaignRules">
+    <div class="detail-panel__header">
+        <div class="detail-panel__title">
+            <span class="detail-panel__icon" aria-hidden="true">
+                <i class="fa-solid fa-list-check"></i>
+            </span>
+            <div>
+                <h2>Regras da Campanha</h2>
+                <p>Orientações e condições para divulgação.</p>
+            </div>
+        </div>
+    </div>
+    <div id="rulesContainer" class="rules-container detail-panel__body">
+        <p class="detail-empty loading-rules">Carregando regras...</p>
+    </div>
+</section>
+
+<section class="detail-panel campaign-materials" id="campaignMaterials">
+    <div class="detail-panel__header">
+        <div class="detail-panel__title">
+            <span class="detail-panel__icon" aria-hidden="true">
+                <i class="fa-regular fa-images"></i>
+            </span>
+            <div>
+                <h2>Materiais</h2>
+                <p>Acesse os materiais disponíveis para esta campanha.</p>
+            </div>
+        </div>
+        <button type="button" id="btnAbrirMateriais" class="detail-panel__action">
+            <i class="fa-solid fa-eye"></i>
+            Ver materiais
+        </button>
+    </div>
+    <div class="detail-panel__body detail-panel__body--materials">
+        <div class="detail-hint">
+            <i class="fa-solid fa-folder-open"></i>
+            <p>Abra a galeria para visualizar, baixar e usar os materiais desta campanha.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Modal de materiais (mantido) -->
+<div class="materials-modal" id="materialsModal" hidden>
+    <div class="materials-modal__overlay" id="materialsModalOverlay"></div>
+    <div class="materials-modal__box" role="dialog" aria-modal="true" aria-labelledby="materialsModalTitle">
+        <div class="materials-modal__header">
+            <div>
+                <h2 id="materialsModalTitle">Materiais da campanha</h2>
+                <p id="materialsModalSubtitle">Materiais disponíveis para divulgação.</p>
+            </div>
+            <button type="button" id="btnFecharMateriais" class="materials-modal__close" aria-label="Fechar materiais">
+                &times;
+            </button>
+        </div>
+        <div id="materialsContainer" class="materials-container">
+            <p class="loading-materials">Carregando materiais...</p>
+        </div>
+    </div>
+</div>
+
+<section class="detail-panel campaign-copies" id="campaignCopies">
+    <div class="detail-panel__header">
+        <div class="detail-panel__title">
+            <span class="detail-panel__icon" aria-hidden="true">
+                <i class="fa-regular fa-file-lines"></i>
+            </span>
+            <div>
+                <h2>Copies</h2>
+                <p>Textos prontos para usar na divulgação.</p>
+            </div>
+        </div>
+    </div>
+    <div id="copiesContainer" class="copies-container detail-panel__body">
+        <p class="detail-empty">Carregando copies...</p>
+    </div>
+</section>
+
+<section class="detail-panel campaign-angles" id="campaignAngles">
+    <div class="detail-panel__header">
+        <div class="detail-panel__title">
+            <span class="detail-panel__icon" aria-hidden="true">
+                <i class="fa-solid fa-lightbulb"></i>
+            </span>
+            <div>
+                <h2>Ângulos de Divulgação</h2>
+                <p>Ideias e abordagens para comunicar a campanha.</p>
+            </div>
+        </div>
+    </div>
+    <div id="anglesContainer" class="angles-container detail-panel__body">
+        <p class="detail-empty loading-angles">Carregando ângulos...</p>
+    </div>
+</section>
+
+<section class="detail-panel campaign-kit" id="campaignKit">
+    <div class="detail-panel__header">
+        <div class="detail-panel__title">
+            <span class="detail-panel__icon" aria-hidden="true">
+                <i class="fa-solid fa-box-archive"></i>
+            </span>
+            <div>
+                <h2>Kit da Campanha</h2>
+                <p>Pacote completo para download e uso.</p>
+            </div>
+        </div>
+        <a
+            id="btnDownloadKit"
+            class="detail-panel__action"
+            href="#"
+            download
+        >
+            <i class="fa-solid fa-download"></i>
+            Baixar kit
+        </a>
+    </div>
+    <div id="kitContainer" class="kit-container detail-panel__body">
+        <p class="detail-empty">Carregando kit...</p>
+    </div>
+</section>
+
+</div>
+
+<script src="campanha-detalhes.js?v=20260812b"></script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Shiver - Login</title>
+
+    <link rel="stylesheet" href="../css/admin/login.css">
+    <link rel="stylesheet" href="../css/admin/admin-theme.css">
+</head>
+
+<body>
+
+    <main class="login">
+
+        <div class="login-box">
+
+            <p class="login-kicker">Painel administrativo</p>
+
+            <h1>Shiver Admin</h1>
+
+            <p>
+                Acesse o painel administrativo
+            </p>
+
+
+            <form id="loginForm">
+
+                <label class="u-sr-only" for="email">Email</label>
+                <input 
+                    type="email"
+                    id="email"
+                    placeholder="Email"
+                    required
+                    autocomplete="username"
+                >
+
+
+                <label class="u-sr-only" for="password">Senha</label>
+                <input 
+                    type="password"
+                    id="password"
+                    placeholder="Senha"
+                    required
+                    autocomplete="current-password"
+                >
+
+
+                <button type="submit">
+                    Entrar
+                </button>
+
+
+                <span id="loginMessage"></span>
+
+            </form>
+
+        </div>
+
+    </main>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="./supabase-client.js"></script>
+    <script src="login.js"></script>
+
+</body>
+
+</html>

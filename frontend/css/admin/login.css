@@ -1,0 +1,383 @@
+/* ======================================================
+   RESET
+====================================================== */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+
+/* ======================================================
+   BASE
+====================================================== */
+
+html {
+    min-height: 100%;
+}
+
+body {
+    min-height: 100vh;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    color: #1f2937;
+
+    background:
+        radial-gradient(
+            circle at top left,
+            rgba(59, 130, 246, 0.12),
+            transparent 35%
+        ),
+        radial-gradient(
+            circle at bottom right,
+            rgba(147, 197, 253, 0.12),
+            transparent 35%
+        ),
+        linear-gradient(
+            135deg,
+            #f8fafc 0%,
+            #eef2f7 100%
+        );
+}
+
+
+/* ======================================================
+   LOGIN
+====================================================== */
+
+.login {
+    min-height: 100vh;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 30px 20px;
+}
+
+
+/* ======================================================
+   LOGIN BOX
+====================================================== */
+
+.login-box {
+    width: min(420px, 100%);
+
+    padding: 40px;
+
+    background:
+        rgba(255, 255, 255, 0.96);
+
+    border:
+        1px solid rgba(229, 231, 235, 0.9);
+
+    border-radius: 20px;
+
+    box-shadow:
+        0 20px 60px rgba(15, 23, 42, 0.1);
+
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+
+    animation:
+        loginEntrada 0.35s ease-out;
+}
+
+
+/* ======================================================
+   ANIMAÇÃO
+====================================================== */
+
+@keyframes loginEntrada {
+
+    from {
+        opacity: 0;
+
+        transform:
+            translateY(15px)
+            scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(1);
+    }
+}
+
+
+/* ======================================================
+   TÍTULO
+====================================================== */
+
+.login-box h1 {
+    margin-bottom: 8px;
+
+    color: #111827;
+
+    font-size: 30px;
+    font-weight: 800;
+
+    letter-spacing: -0.6px;
+
+    text-align: center;
+}
+
+
+/* ======================================================
+   DESCRIÇÃO
+====================================================== */
+
+.login-box > p {
+    margin-bottom: 30px;
+
+    color: #6b7280;
+
+    font-size: 14px;
+
+    text-align: center;
+
+    line-height: 1.5;
+}
+
+
+/* ======================================================
+   FORMULÁRIO
+====================================================== */
+
+#loginForm {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 15px;
+}
+
+
+/* ======================================================
+   INPUTS
+====================================================== */
+
+#loginForm input {
+    width: 100%;
+
+    min-height: 48px;
+
+    padding:
+        12px 14px;
+
+    background: #ffffff;
+
+    border:
+        1px solid #d1d5db;
+
+    border-radius: 10px;
+
+    outline: none;
+
+    color: #111827;
+
+    font-size: 15px;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+#loginForm input::placeholder {
+    color: #9ca3af;
+}
+
+#loginForm input:hover {
+    border-color: #9ca3af;
+}
+
+#loginForm input:focus {
+    border-color: #3b82f6;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 0 0 3px rgba(59, 130, 246, 0.12);
+}
+
+
+/* ======================================================
+   BOTÃO ENTRAR
+====================================================== */
+
+#loginForm button {
+    width: 100%;
+
+    min-height: 48px;
+
+    margin-top: 5px;
+
+    padding:
+        12px 18px;
+
+    border: 0;
+
+    border-radius: 10px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #3b82f6,
+            #2563eb
+        );
+
+    color: #111;
+
+    font-size: 15px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 6px 16px rgba(59, 130, 246, 0.22);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        opacity 0.2s ease;
+}
+
+#loginForm button:hover {
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 9px 22px rgba(59, 130, 246, 0.3);
+}
+
+#loginForm button:active {
+    transform: translateY(0);
+}
+
+#loginForm button:focus-visible {
+    outline:
+        3px solid rgba(59, 130, 246, 0.25);
+
+    outline-offset: 3px;
+}
+
+
+/* ======================================================
+   MENSAGEM DE LOGIN
+====================================================== */
+
+#loginMessage {
+    display: block;
+
+    min-height: 20px;
+
+    margin-top: 2px;
+
+    color: #dc2626;
+
+    font-size: 13px;
+
+    line-height: 1.5;
+
+    text-align: center;
+}
+
+
+/* ======================================================
+   ESTADOS DE MENSAGEM
+====================================================== */
+
+#loginMessage.success {
+    color: #1d4ed8;
+}
+
+#loginMessage.error {
+    color: #dc2626;
+}
+
+
+/* ======================================================
+   RESPONSIVIDADE
+====================================================== */
+
+@media (max-width: 600px) {
+
+    .login {
+        padding:
+            20px 16px;
+    }
+
+    .login-box {
+        padding:
+            32px 24px;
+
+        border-radius: 17px;
+    }
+
+    .login-box h1 {
+        font-size: 26px;
+    }
+
+    .login-box > p {
+        margin-bottom: 25px;
+    }
+}
+
+
+/* ======================================================
+   TELAS MUITO PEQUENAS
+====================================================== */
+
+@media (max-width: 380px) {
+
+    .login {
+        padding:
+            15px 12px;
+    }
+
+    .login-box {
+        padding:
+            28px 20px;
+
+        border-radius: 15px;
+    }
+
+    .login-box h1 {
+        font-size: 24px;
+    }
+
+    #loginForm {
+        gap: 13px;
+    }
+
+    #loginForm input,
+    #loginForm button {
+        min-height: 46px;
+    }
+}
+
+
+/* ======================================================
+   PREFERÊNCIA POR MENOS ANIMAÇÃO
+====================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .login-box {
+        animation: none;
+    }
+
+    #loginForm input,
+    #loginForm button {
+        transition: none;
+    }
+}

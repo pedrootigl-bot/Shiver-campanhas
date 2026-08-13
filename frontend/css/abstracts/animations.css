@@ -1,0 +1,73 @@
+/* Partner Hub — motion tokens */
+
+@keyframes borderGlow {
+    from { background-position: 0% 50%; }
+    to { background-position: 300% 50%; }
+}
+
+@keyframes glow-rotate {
+    to {
+        transform: scale(1.08) translateY(-40px) rotate(360deg) translateZ(0);
+    }
+}
+
+@keyframes fade-up {
+    from {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes soft-pulse {
+    0%, 100% { opacity: 0.45; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(1.04); }
+}
+
+@keyframes btn-shine {
+    0% { transform: translateX(-120%) skewX(-18deg); }
+    100% { transform: translateX(220%) skewX(-18deg); }
+}
+
+/* Section enter / leave */
+.reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    filter: blur(2px);
+    transition:
+        opacity 0.65s var(--ease-out, cubic-bezier(0.22, 1, 0.36, 1)),
+        transform 0.65s var(--ease-out, cubic-bezier(0.22, 1, 0.36, 1)),
+        filter 0.65s ease;
+    will-change: opacity, transform, filter;
+}
+
+.reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+}
+
+.reveal--delay-1 { transition-delay: 0.06s; }
+.reveal--delay-2 { transition-delay: 0.12s; }
+.reveal--delay-3 { transition-delay: 0.18s; }
+
+.reveal.is-leaving {
+    opacity: 0;
+    transform: translateY(-16px);
+    filter: blur(1px);
+    transition-duration: 0.45s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .reveal,
+    .reveal.is-visible,
+    .reveal.is-leaving {
+        opacity: 1;
+        transform: none;
+        filter: none;
+        transition: none;
+    }
+}

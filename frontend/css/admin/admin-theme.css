@@ -1,0 +1,610 @@
+/* ======================================================
+   ADMIN THEME — dark + gradient preto → azul
+   Carregar por último nas páginas admin
+====================================================== */
+
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap");
+
+:root {
+    --admin-bg-0: #000000;
+    --admin-bg-1: #040a14;
+    --admin-bg-2: #0a1420;
+    --admin-bg-3: #102030;
+    --admin-surface: rgba(10, 16, 28, 0.84);
+    --admin-surface-solid: #0b1420;
+    --admin-surface-elevated: #122030;
+    --admin-border: rgba(255, 255, 255, 0.1);
+    --admin-border-strong: rgba(59, 130, 246, 0.35);
+    --admin-text: #e4eaf6;
+    --admin-muted: #8f969f;
+    --admin-primary: #3b82f6;
+    --admin-primary-soft: #93c5fd;
+    --admin-primary-dark: #1d4ed8;
+    --admin-danger: #f87171;
+    --admin-radius: 16px;
+    --admin-shadow: 0 18px 48px rgba(0, 0, 0, 0.35);
+    --admin-font: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    min-height: 100vh;
+    font-family: var(--admin-font);
+    color: var(--admin-text);
+    line-height: 1.5;
+    background:
+        radial-gradient(ellipse 70% 50% at 15% -10%, rgba(59, 130, 246, 0.18), transparent 55%),
+        radial-gradient(ellipse 55% 45% at 95% 10%, rgba(147, 197, 253, 0.08), transparent 50%),
+        radial-gradient(ellipse 50% 40% at 70% 100%, rgba(29, 78, 216, 0.12), transparent 55%),
+        linear-gradient(160deg, var(--admin-bg-0) 0%, var(--admin-bg-1) 28%, var(--admin-bg-2) 62%, var(--admin-bg-3) 100%);
+    background-attachment: fixed;
+}
+
+/* Header */
+.admin-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    width: 100%;
+    min-height: 76px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.25rem;
+    padding: 0 5%;
+    margin-bottom: 0;
+    background: rgba(4, 10, 20, 0.82);
+    border-bottom: 1px solid var(--admin-border);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+}
+
+.admin-header h1,
+.admin-header__left h1,
+#pageTitle {
+    color: #f8fafc !important;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+}
+
+.admin-header__left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* Buttons genericos */
+#logoutBtn,
+#voltarBtn,
+.btn-voltar,
+.admin-menu button,
+.btn,
+.btn-abrir-campanha {
+    font-family: var(--admin-font);
+}
+
+#logoutBtn,
+#voltarBtn:not(.btn),
+.btn-voltar {
+    background: rgba(12, 18, 28, 0.9) !important;
+    border: 1px solid var(--admin-border) !important;
+    color: var(--admin-text) !important;
+    border-radius: 10px !important;
+    box-shadow: none !important;
+}
+
+#logoutBtn:hover,
+#voltarBtn:not(.btn):hover,
+.btn-voltar:hover {
+    border-color: var(--admin-border-strong) !important;
+    color: #fff !important;
+    background: rgba(59, 130, 246, 0.12) !important;
+}
+
+.btn-site-publico {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.45rem !important;
+    min-height: 40px !important;
+    padding: 0.5rem 0.95rem !important;
+    border-radius: 10px !important;
+    border: 1px solid rgba(59, 130, 246, 0.4) !important;
+    background: rgba(59, 130, 246, 0.1) !important;
+    color: #93c5fd !important;
+    font-family: var(--admin-font) !important;
+    font-size: 0.84rem !important;
+    font-weight: 700 !important;
+    text-decoration: none !important;
+    white-space: nowrap !important;
+    cursor: pointer !important;
+    transition: 0.2s ease !important;
+}
+
+.btn-site-publico:hover {
+    background: rgba(59, 130, 246, 0.18) !important;
+    border-color: #3b82f6 !important;
+    color: #bfdbfe !important;
+}
+
+.admin-header {
+    gap: 0.75rem;
+}
+
+.admin-header__actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    margin-left: auto;
+}
+
+.btn-primary,
+.admin-menu button:first-child,
+button[onclick*="campanha-form"] {
+    background: linear-gradient(180deg, #60a5fa 0%, var(--admin-primary) 100%) !important;
+    color: #061018 !important;
+    border: none !important;
+    box-shadow: 0 8px 22px rgba(59, 130, 246, 0.22) !important;
+}
+
+.btn-secondary {
+    background: transparent !important;
+    border: 1px solid var(--admin-border) !important;
+    color: var(--admin-text) !important;
+}
+
+/* Dashboard / lists */
+.dashboard,
+.admin-main,
+.admin-container {
+    color: var(--admin-text);
+}
+
+.stat-card,
+#campanhasContainer .campaign-card,
+.form-section,
+.campaign-detail-card,
+.login-box {
+    background: var(--admin-surface) !important;
+    border: 1px solid var(--admin-border) !important;
+    box-shadow: var(--admin-shadow) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    color: var(--admin-text);
+}
+
+.stat-card::before,
+#campanhasContainer .campaign-card::before {
+    background: linear-gradient(90deg, var(--admin-primary), var(--admin-primary-soft)) !important;
+}
+
+.stat-card::after {
+    background: rgba(59, 130, 246, 0.08) !important;
+}
+
+.stat-card h3,
+.stat-card span,
+.login-box > p,
+.form-section__header p,
+.campaign-card p,
+.campaign-card span {
+    color: var(--admin-muted) !important;
+}
+
+.stat-card strong,
+#campanhasContainer .campaign-card h2,
+.form-section__header h2,
+.detail-content h2,
+.login-box h1,
+.campaign-detail-card h2,
+.campaign-detail-card h3 {
+    color: #f8fafc !important;
+}
+
+.stat-card:hover,
+#campanhasContainer .campaign-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--admin-border-strong) !important;
+    box-shadow: 0 20px 44px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Menu cards */
+.admin-menu {
+    display: grid;
+    gap: 1rem;
+}
+
+.admin-menu button {
+    min-height: 125px !important;
+    padding: 25px 50px 25px 25px !important;
+    border-radius: 18px !important;
+    border: 1px solid var(--admin-border) !important;
+    background: var(--admin-surface) !important;
+    color: var(--admin-text) !important;
+    font-weight: 700 !important;
+    box-shadow: var(--admin-shadow) !important;
+    cursor: pointer;
+    transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.admin-menu button::before {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.12), transparent 60%) !important;
+}
+
+.admin-menu button::after {
+    color: var(--admin-primary) !important;
+}
+
+.admin-menu button:hover {
+    transform: translateY(-4px) !important;
+    border-color: var(--admin-border-strong) !important;
+    background: rgba(59, 130, 246, 0.12) !important;
+    color: #fff !important;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35) !important;
+}
+
+/* Forms */
+.form-group label,
+label {
+    color: #c9d0dc !important;
+}
+
+input,
+textarea,
+select {
+    background: rgba(4, 10, 20, 0.78) !important;
+    border: 1px solid var(--admin-border) !important;
+    color: var(--admin-text) !important;
+    border-radius: 10px !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: #6b7280 !important;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none !important;
+    border-color: rgba(59, 130, 246, 0.45) !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.16) !important;
+}
+
+/* Login */
+.login {
+    background: transparent;
+}
+
+.login-kicker {
+    margin: 0 0 0.55rem !important;
+    color: var(--admin-primary) !important;
+    font-size: 0.72rem !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.14em !important;
+    text-transform: uppercase !important;
+    text-align: center;
+}
+
+.u-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.login-box {
+    border-radius: 20px !important;
+}
+
+.login-box h1 {
+    letter-spacing: -0.04em;
+}
+
+#loginForm input {
+    background: rgba(4, 10, 20, 0.88) !important;
+}
+
+#loginForm button[type="submit"] {
+    background: linear-gradient(180deg, #60a5fa 0%, var(--admin-primary) 100%) !important;
+    color: #061018 !important;
+    border: none !important;
+    border-radius: 12px !important;
+    font-weight: 800 !important;
+    min-height: 48px;
+    box-shadow: 0 10px 28px rgba(59, 130, 246, 0.25) !important;
+}
+
+#loginMessage {
+    color: var(--admin-muted);
+}
+
+/* Detail page */
+.campaign-detail-card {
+    width: min(1100px, 92%);
+    margin: 2rem auto;
+    border-radius: var(--admin-radius);
+    overflow: hidden;
+}
+
+.campaign-detail-card img {
+    width: 100%;
+    max-height: 320px;
+    object-fit: cover;
+    display: block;
+}
+
+.detail-content {
+    padding: 1.5rem;
+}
+
+/* ======================================================
+   DETALHES DA CAMPANHA — textos brancos (contraste)
+====================================================== */
+
+.page-campanha-detalhes,
+.page-campanha-detalhes body {
+    color: #ffffff;
+}
+
+.page-campanha-detalhes .admin-header h1,
+.page-campanha-detalhes #pageTitle {
+    color: #ffffff !important;
+}
+
+.page-campanha-detalhes .campaign-detail-card,
+.page-campanha-detalhes .campaign-detail-card * {
+    color: #ffffff;
+}
+
+.page-campanha-detalhes .campaign-detail-card {
+    color: #ffffff !important;
+}
+
+.page-campanha-detalhes #detail-category {
+    background: rgba(59, 130, 246, 0.16) !important;
+    color: #93c5fd !important;
+    border: 1px solid rgba(59, 130, 246, 0.35);
+}
+
+.page-campanha-detalhes #detail-title,
+.page-campanha-detalhes .detail-content h1 {
+    color: #ffffff !important;
+}
+
+.page-campanha-detalhes #detail-description,
+.page-campanha-detalhes .detail-content p,
+.page-campanha-detalhes .detail-info p,
+.page-campanha-detalhes .detail-info span,
+.page-campanha-detalhes .detail-info strong,
+.page-campanha-detalhes #detail-objective,
+.page-campanha-detalhes #detail-prize,
+.page-campanha-detalhes #detail-coupon,
+.page-campanha-detalhes #detail-minimum,
+.page-campanha-detalhes #detail-start,
+.page-campanha-detalhes #detail-end,
+.page-campanha-detalhes #detail-status {
+    color: #ffffff !important;
+}
+
+.page-campanha-detalhes .detail-info p {
+    border-bottom-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+.page-campanha-detalhes .section-header h2,
+.page-campanha-detalhes .section-header p,
+.page-campanha-detalhes .campaign-rules,
+.page-campanha-detalhes .campaign-materials,
+.page-campanha-detalhes .campaign-copies,
+.page-campanha-detalhes .campaign-angles,
+.page-campanha-detalhes .campaign-kit {
+    color: #ffffff !important;
+}
+
+.page-campanha-detalhes .section-header p {
+    color: rgba(255, 255, 255, 0.92) !important;
+}
+
+.page-campanha-detalhes .rule-item {
+    background: rgba(11, 18, 28, 0.88) !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28) !important;
+}
+
+.page-campanha-detalhes .rule-content h3,
+.page-campanha-detalhes .rule-content p,
+.page-campanha-detalhes .rules-container,
+.page-campanha-detalhes .rules-container p,
+.page-campanha-detalhes .loading-rules,
+.page-campanha-detalhes .empty-rules,
+.page-campanha-detalhes .error-rules {
+    color: #ffffff !important;
+}
+
+.page-campanha-detalhes .rule-number {
+    color: #061018 !important;
+}
+
+.page-campanha-detalhes .copies-container,
+.page-campanha-detalhes .angles-container,
+.page-campanha-detalhes .kit-container,
+.page-campanha-detalhes .materials-container,
+.page-campanha-detalhes .copies-container p,
+.page-campanha-detalhes .angles-container p,
+.page-campanha-detalhes .kit-container p,
+.page-campanha-detalhes .loading-materials,
+.page-campanha-detalhes .empty-materials,
+.page-campanha-detalhes .loading-angles,
+.page-campanha-detalhes .empty-angles,
+.page-campanha-detalhes .error-angles,
+.page-campanha-detalhes .angle-card__content h3,
+.page-campanha-detalhes .angle-card__content p,
+.page-campanha-detalhes .angle-card__number {
+    color: #ffffff !important;
+}
+
+.page-campanha-detalhes .material-card,
+.page-campanha-detalhes .material-content,
+.page-campanha-detalhes .material-content h3,
+.page-campanha-detalhes .material-content p,
+.page-campanha-detalhes .angle-card,
+.page-campanha-detalhes .angle-card h3,
+.page-campanha-detalhes .angle-card p,
+.page-campanha-detalhes .copy-card,
+.page-campanha-detalhes .copy-card h3,
+.page-campanha-detalhes .copy-card p {
+    color: #ffffff !important;
+}
+
+.page-campanha-detalhes .error-materials,
+.page-campanha-detalhes .admin-message.error {
+    color: #fecaca !important;
+}
+
+/* Entrada animada ao vir da busca (Enter) */
+.page-campanha-detalhes.from-search .admin-header,
+.page-campanha-detalhes.from-search .campaign-detail-card,
+.page-campanha-detalhes.from-search .campaign-sections {
+    opacity: 0;
+    transform: translateY(18px);
+    animation: detalhes-enter 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.page-campanha-detalhes.from-search .admin-header {
+    animation-delay: 0.05s;
+}
+
+.page-campanha-detalhes.from-search .campaign-detail-card {
+    animation-delay: 0.12s;
+}
+
+.page-campanha-detalhes.from-search .campaign-sections {
+    animation-delay: 0.22s;
+}
+
+@keyframes detalhes-enter {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Form — Nova Campanha */
+.admin-main {
+    width: min(980px, 92%);
+    margin: 2rem auto 4rem;
+}
+
+#campanhaForm {
+    gap: 1.35rem !important;
+}
+
+.form-section {
+    padding: 1.5rem 1.6rem !important;
+    border-radius: 16px !important;
+}
+
+.form-section__header {
+    margin-bottom: 1.25rem !important;
+    padding-bottom: 0.9rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    position: sticky;
+    bottom: 1rem;
+    z-index: 20;
+    margin-top: 0.5rem;
+    padding: 1rem 1.15rem;
+    border-radius: 14px;
+    background: rgba(4, 10, 20, 0.88);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+}
+
+.form-actions .btn-primary,
+#salvarBtn {
+    min-height: 46px !important;
+    padding: 0.7rem 1.25rem !important;
+    border-radius: 12px !important;
+    background: linear-gradient(180deg, #60a5fa 0%, #3b82f6 100%) !important;
+    color: #061018 !important;
+    border: none !important;
+    font-weight: 800 !important;
+    box-shadow: 0 10px 24px rgba(59, 130, 246, 0.22) !important;
+}
+
+.form-actions .btn-secondary,
+#cancelarBtn,
+#adicionarCopyBtn,
+#adicionarRegraBtn,
+#adicionarMaterialBtn {
+    min-height: 44px !important;
+    padding: 0.65rem 1.1rem !important;
+    border-radius: 12px !important;
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.14) !important;
+    color: #e5e7eb !important;
+}
+
+.form-actions .btn-secondary:hover,
+#cancelarBtn:hover,
+#adicionarCopyBtn:hover,
+#adicionarRegraBtn:hover,
+#adicionarMaterialBtn:hover {
+    border-color: rgba(59, 130, 246, 0.35) !important;
+    background: rgba(59, 130, 246, 0.1) !important;
+    color: #fff !important;
+}
+
+.checkbox-option {
+    background: rgba(4, 10, 20, 0.55) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: #d8dce6 !important;
+}
+
+.checkbox-option:has(input:checked) {
+    border-color: rgba(59, 130, 246, 0.4) !important;
+    background: rgba(59, 130, 246, 0.12) !important;
+}
+
+.upload-dropzone {
+    background: rgba(4, 10, 20, 0.55) !important;
+    border-color: rgba(255, 255, 255, 0.14) !important;
+}
+
+.upload-dropzone__empty p,
+.upload-dropzone.has-preview {
+    color: #e5e7eb !important;
+    background: transparent !important;
+}
+
+.upload-dropzone.is-dragover {
+    border-color: #3b82f6 !important;
+    background: rgba(59, 130, 246, 0.1) !important;
+}
+
+.campanhas-toolbar {
+    margin-bottom: 2rem !important;
+}
+
+.btn-nova-campanha {
+    background: linear-gradient(180deg, #60a5fa 0%, #3b82f6 100%) !important;
+    color: #061018 !important;
+}

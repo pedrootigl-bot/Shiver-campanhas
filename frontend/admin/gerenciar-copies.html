@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar Copies - Shiver Admin</title>
+
+    <link rel="stylesheet" href="../css/admin/admin-theme.css">
+    <link rel="stylesheet" href="../css/admin/campanhas-board.css">
+    <link rel="stylesheet" href="../css/admin/campanha-form.css">
+    <link rel="stylesheet" href="../css/admin/gerenciar-materiais.css">
+    <link rel="stylesheet" href="../css/admin/gerenciar-copies.css">
+    <link rel="stylesheet" href="../css/admin/notificacoes-admin.css">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+
+<body class="admin-board gm-page gc-page">
+
+    <aside class="admin-sidebar">
+        <a href="dashboard.html" class="admin-sidebar__brand">
+            <span class="admin-sidebar__logo"><i class="fa-solid fa-chart-simple"></i></span>
+            <strong>Shiver</strong>
+        </a>
+
+        <nav class="admin-sidebar__nav" aria-label="Menu admin">
+            <a href="dashboard.html"><i class="fa-solid fa-gauge-high"></i><span>Dashboard</span></a>
+            <a href="campanhas.html"><i class="fa-solid fa-bullhorn"></i><span>Campanhas</span></a>
+            <a href="gerenciar-materiais.html"><i class="fa-regular fa-image"></i><span>Materiais</span></a>
+            <a href="gerenciar-copies.html" class="is-active">
+                <i class="fa-regular fa-file-lines"></i><span>Copies</span>
+            </a>
+        </nav>
+    </aside>
+
+    <div class="admin-board__main">
+
+        <header class="admin-topbar">
+            <h1>Gerenciar Copies</h1>
+            <div class="admin-topbar__right">
+                <button type="button" id="voltarDashboardBtn" class="gm-btn gm-btn--secondary">
+                    <i class="fa-solid fa-gauge-high"></i>
+                    Dashboard
+                </button>
+                <a href="../index.html" class="btn-site-publico">
+                    Voltar para o site público
+                </a>
+            </div>
+        </header>
+
+        <section id="viewCampanhas" class="gm-view" aria-label="Campanhas ativas">
+            <div class="gm-section-head">
+                <div>
+                    <h2>Campanhas ativas</h2>
+                    <p>Selecione uma campanha para gerenciar as copies.</p>
+                </div>
+            </div>
+
+            <div id="campanhasState" class="gm-state" hidden></div>
+            <div id="campanhasGrid" class="gm-campaigns-grid"></div>
+        </section>
+
+        <section id="viewCopies" class="gm-view" hidden aria-label="Copies da campanha">
+            <div class="gm-section-head">
+                <div>
+                    <button type="button" id="voltarCampanhasBtn" class="gm-back-btn">
+                        <i class="fa-solid fa-arrow-left"></i>
+                        Voltar às campanhas
+                    </button>
+                    <h2 id="copiesTitulo">Copies</h2>
+                    <p id="copiesSubtitulo">Gerencie as copies desta campanha.</p>
+                </div>
+                <button type="button" id="adicionarCopyBtn" class="gm-btn gm-btn--primary">
+                    <i class="fa-solid fa-plus"></i>
+                    Adicionar copy
+                </button>
+            </div>
+
+            <div id="copiesState" class="gm-state" hidden></div>
+            <div id="copiesLista" class="gc-copies-list"></div>
+        </section>
+
+    </div>
+
+    <!-- Modal formulário (mesmos campos do campanha-form) -->
+    <div class="gm-modal" id="copyModal" hidden>
+        <div class="gm-modal__overlay" id="copyModalOverlay"></div>
+        <div class="gm-modal__box" role="dialog" aria-modal="true" aria-labelledby="copyModalTitle">
+            <div class="gm-modal__header">
+                <h2 id="copyModalTitle">Adicionar copy</h2>
+                <button type="button" class="gm-modal__close" id="copyModalClose" aria-label="Fechar">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form id="copyForm" class="gm-modal__form">
+                <input type="hidden" id="copyId">
+
+                <label for="copyTitulo">Título</label>
+                <input
+                    type="text"
+                    id="copyTitulo"
+                    class="copy-titulo"
+                    placeholder="Ex: Urgência"
+                    required
+                >
+
+                <label for="copyTexto">Texto</label>
+                <textarea
+                    id="copyTexto"
+                    class="copy-texto"
+                    rows="6"
+                    placeholder="Digite o texto da copy..."
+                    required
+                ></textarea>
+
+                <div class="gc-form-row">
+                    <div>
+                        <label for="copyCanal">Canal</label>
+                        <input
+                            type="text"
+                            id="copyCanal"
+                            class="copy-canal"
+                            placeholder="Ex: Instagram"
+                        >
+                    </div>
+                    <div>
+                        <label for="copyTipo">Tipo</label>
+                        <input
+                            type="text"
+                            id="copyTipo"
+                            class="copy-tipo"
+                            placeholder="Ex: Story"
+                        >
+                    </div>
+                    <div>
+                        <label for="copyOrdem">Ordem</label>
+                        <input
+                            type="number"
+                            id="copyOrdem"
+                            class="copy-ordem"
+                            min="1"
+                            value="1"
+                        >
+                    </div>
+                </div>
+
+                <p id="copyFormStatus" class="gc-form-status" hidden></p>
+
+                <div class="gm-modal__actions">
+                    <button type="button" class="gm-btn gm-btn--secondary" id="copyCancelBtn">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="gm-btn gm-btn--primary" id="copySalvarBtn">
+                        <i class="fa-solid fa-check"></i>
+                        Salvar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal visualizar -->
+    <div class="gm-modal" id="copyViewModal" hidden>
+        <div class="gm-modal__overlay" id="copyViewModalOverlay"></div>
+        <div class="gm-modal__box" role="dialog" aria-modal="true" aria-labelledby="copyViewTitle">
+            <div class="gm-modal__header">
+                <h2 id="copyViewTitle">Copy</h2>
+                <button type="button" class="gm-modal__close" id="copyViewModalClose" aria-label="Fechar">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="gc-view-meta" id="copyViewMeta"></div>
+            <pre class="gc-view-texto" id="copyViewTexto"></pre>
+            <div class="gm-modal__actions">
+                <button type="button" class="gm-btn gm-btn--download" id="copyViewCopiarBtn">
+                    <i class="fa-regular fa-copy"></i>
+                    Copiar texto
+                </button>
+                <button type="button" class="gm-btn gm-btn--secondary" id="copyViewFecharBtn">
+                    Fechar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="./supabase-client.js"></script>
+    <script src="./notificacoes-admin.js?v=20260812n1"></script>
+    <script src="./gerenciar-copies.js"></script>
+
+</body>
+
+</html>

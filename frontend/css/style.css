@@ -1,0 +1,80 @@
+/* ==================================================
+   ABSTRACTS
+================================================== */
+
+@import url("abstracts/reset.css");
+@import url("abstracts/variable.css");
+@import url("abstracts/animations.css");
+
+/* ==================================================
+   LAYOUT
+================================================== */
+
+@import url("layout/container.css");
+@import url("layout/header.css");
+@import url("layout/footer.css");
+
+/* ==================================================
+   COMPONENTS
+================================================== */
+
+@import url("components/navbar.css");
+@import url("components/button.css");
+@import url("components/card.css");
+@import url("components/modal.css");
+@import url("components/loader.css");
+
+/* ==================================================
+   SECTIONS
+================================================== */
+
+@import url("sections/hero.css");
+@import url("sections/stats.css");
+@import url("sections/highlight.css");
+@import url("sections/campaign.css");
+@import url("sections/calendar.css");
+@import url("sections/support.css");
+
+/* ==================================================
+   RESPONSIVE
+================================================== */
+
+@import url("responsive/responsive.css");
+
+/* ==================================================
+   BASE
+================================================== */
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    position: relative;
+    isolation: isolate;
+    font-family: var(--font-sans);
+    background: #000;
+    color: var(--text);
+    min-height: 100vh;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 180px 180px;
+}
+
+h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+}
+
+::selection {
+    background: rgba(59, 130, 246, 0.35);
+    color: #fff;
+}

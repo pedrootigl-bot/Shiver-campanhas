@@ -1,0 +1,220 @@
+/* ==================================================
+   Central de Notificações — Admin Shiver
+================================================== */
+
+.admin-notifications {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    z-index: 40;
+}
+
+.admin-notifications__bell {
+    position: relative;
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(8, 14, 24, 0.75);
+    color: #d7e0f0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition:
+        border-color 0.2s ease,
+        background 0.2s ease,
+        color 0.2s ease;
+}
+
+.admin-notifications__bell:hover,
+.admin-notifications__bell[aria-expanded="true"] {
+    border-color: rgba(59, 130, 246, 0.45);
+    background: rgba(59, 130, 246, 0.12);
+    color: #93c5fd;
+}
+
+.admin-notifications__bell i {
+    font-size: 1.05rem;
+}
+
+.admin-notifications__badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background: #3b82f6;
+    color: #061018;
+    font-size: 0.68rem;
+    font-weight: 800;
+    line-height: 18px;
+    text-align: center;
+    box-shadow: 0 0 0 2px #0b1018;
+}
+
+.admin-notifications__panel {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    width: min(380px, calc(100vw - 28px));
+    max-height: min(70vh, 520px);
+    display: flex;
+    flex-direction: column;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(10, 14, 24, 0.98);
+    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.45);
+    overflow: hidden;
+}
+
+.admin-notifications__panel[hidden] {
+    display: none !important;
+}
+
+.admin-notifications__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.9rem 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.admin-notifications__header strong {
+    color: #f0f6ff;
+    font-size: 0.95rem;
+}
+
+.admin-notifications__close {
+    width: 32px;
+    height: 32px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: #9ca3af;
+    cursor: pointer;
+}
+
+.admin-notifications__close:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: #fff;
+}
+
+.admin-notifications__list {
+    overflow-y: auto;
+    padding: 0.35rem;
+}
+
+.admin-notifications__empty {
+    margin: 0;
+    padding: 1.4rem 1rem;
+    text-align: center;
+    color: #9ca3af;
+    font-size: 0.88rem;
+}
+
+.admin-notifications__empty.is-error {
+    color: #fca5a5;
+}
+
+.admin-notifications__item {
+    display: grid;
+    grid-template-columns: 36px minmax(0, 1fr);
+    gap: 0.7rem;
+    padding: 0.8rem 0.75rem;
+    border-radius: 12px;
+    border: 1px solid transparent;
+}
+
+.admin-notifications__item.is-unread {
+    background: rgba(59, 130, 246, 0.06);
+    border-color: rgba(59, 130, 246, 0.14);
+}
+
+.admin-notifications__item.is-read {
+    opacity: 0.78;
+}
+
+.admin-notifications__item-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.05);
+    color: #93c5fd;
+}
+
+.admin-notifications__item.is-unread .admin-notifications__item-icon {
+    background: rgba(59, 130, 246, 0.14);
+}
+
+.admin-notifications__item-top {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+}
+
+.admin-notifications__item-top strong {
+    color: #f1f6ff;
+    font-size: 0.88rem;
+}
+
+.admin-notifications__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #3b82f6;
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.55);
+    flex-shrink: 0;
+}
+
+.admin-notifications__item-body p {
+    margin: 0.35rem 0 0.55rem;
+    color: #b7c0cc;
+    font-size: 0.82rem;
+    line-height: 1.45;
+}
+
+.admin-notifications__item-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.admin-notifications__item-meta time,
+.admin-notifications__status {
+    color: #8b9198;
+    font-size: 0.72rem;
+}
+
+.admin-notifications__mark {
+    border: 0;
+    background: transparent;
+    color: #93c5fd;
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+    padding: 0;
+}
+
+.admin-notifications__mark:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 720px) {
+    .admin-notifications__panel {
+        position: fixed;
+        top: 72px;
+        left: 12px;
+        right: 12px;
+        width: auto;
+        max-height: calc(100vh - 96px);
+    }
+}

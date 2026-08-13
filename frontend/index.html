@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="is-loading">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Shiver Partner Hub</title>
+
+    <!-- Favicon -->
+    <link rel="icon" href="assets/images/favicon.ico">
+
+    <!-- Google Fonts — Partner Hub -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <!-- ==========================
+            LOADING SCREEN
+    =========================== -->
+    <div class="site-loader" id="siteLoader" role="status" aria-live="polite" aria-busy="true">
+        <div class="site-loader__glow" aria-hidden="true"></div>
+        <div class="site-loader__scan" aria-hidden="true"></div>
+
+        <div class="site-loader__content">
+            <div class="site-loader__mark" aria-hidden="true">
+                <span class="site-loader__ring"></span>
+                <span class="site-loader__ring site-loader__ring--delay"></span>
+                <span class="site-loader__core">
+                    <i class="fa-solid fa-bolt"></i>
+                </span>
+            </div>
+
+            <p class="site-loader__brand">Shiver</p>
+            <p class="site-loader__sub">Partner Hub</p>
+
+            <div class="site-loader__track" aria-hidden="true">
+                <span class="site-loader__bar"></span>
+            </div>
+
+            <p class="site-loader__status">
+                Preparando materiais<span class="site-loader__dots"></span>
+            </p>
+        </div>
+    </div>
+
+    <!-- ==========================
+            HEADER
+    =========================== -->
+    <header class="navbar">
+
+        <div class="container navbar__content">
+
+            <a href="#" class="logo">
+                <img src="images/NOVO LOGO SHIVER BROKERR-04.png" alt="Shiver">
+            </a>
+
+            <nav class="menu">
+
+                <a href="#divulgar-hoje">
+                    <i class="fa-regular fa-images"></i>
+                    <span>Materiais</span>
+                </a>
+
+                <a href="#campaigns">
+                    <i class="fa-solid fa-bullhorn"></i>
+                    <span>Campanhas</span>
+                </a>
+
+
+                <a href="#oportunidades">
+                    <i class="fa-regular fa-calendar"></i>
+                    <span>Calendário</span>
+                </a>
+
+                <a href="#suporte">
+                    <i class="fa-solid fa-headset"></i>
+                    <span>Suporte</span>
+                </a>
+
+            </nav>
+
+            <div class="navbar__actions">
+
+                <a href="admin/login.html" class="navbar__login">
+                    <i class="fa-solid fa-right-to-bracket"></i>
+                    <span>Login</span>
+                </a>
+
+                <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+
+            </div>
+
+        </div>
+
+    </header>
+
+    <main>
+
+        <section class="hero" id="hero">
+
+            <div class="container">
+
+                <div class="hero__grid">
+
+                    <div class="hero__intro">
+                        <h1 id="heroTitle">Carregando campanha...</h1>
+
+                        <p class="hero__lead" id="heroLead">
+                            Buscando a campanha ativa do momento.
+                        </p>
+                    </div>
+
+                    <div class="hero__visual">
+
+                        <article class="hero__visual-card">
+
+                            <div class="hero__badges">
+                                <span class="hero__badge" id="heroBadgeTermina">
+                                    TERMINA <strong id="heroCountdown">—</strong>
+                                </span>
+                                <span class="hero__badge hero__badge--status" id="heroBadgeStatus">
+                                    —
+                                </span>
+                            </div>
+
+                            <div class="hero__visual-media">
+                                <img
+                                    id="heroImage"
+                                    src="images/post.png"
+                                    alt="Campanha ativa"
+                                >
+                            </div>
+
+                            <div class="hero__visual-caption">
+                                <strong id="heroCaptionCupom">—</strong>
+                                <span id="heroCaptionTitulo">—</span>
+                            </div>
+
+                        </article>
+
+                    </div>
+
+                    <div class="hero__details">
+
+                        <p class="hero__period" id="heroPeriod">—</p>
+
+                        <div class="hero__actions-buttons">
+
+                            <button type="button" class="btn" id="openModal" aria-haspopup="dialog"
+                                aria-controls="modalMateriais">
+                                <i class="fa-solid fa-download"></i>
+                                <span>Acessar materiais</span>
+                            </button>
+
+                            <button
+                                type="button"
+                                class="btn btn--outline"
+                                id="openEntenderCampanha"
+                                aria-haspopup="dialog"
+                                aria-controls="modalMateriais"
+                            >
+                                <i class="fa-solid fa-circle-info"></i>
+                                <span>Entender campanha</span>
+                            </button>
+
+                        </div>
+
+                        <div class="hero__meta" aria-label="Dados da campanha">
+                            <div class="info-card">
+                                <span class="info-card__label">CUPOM</span>
+                                <strong class="info-card__value info-card__value--accent" id="heroCupom">—</strong>
+                            </div>
+
+                            <div class="info-card">
+                                <span class="info-card__label">DEPÓSITO MÍN.</span>
+                                <strong class="info-card__value" id="heroDeposito">—</strong>
+                            </div>
+
+                            <div class="info-card">
+                                <span class="info-card__label">PRÊMIO</span>
+                                <strong class="info-card__value" id="heroPremio">—</strong>
+                            </div>
+                        </div>
+
+                        <p class="hero__focus" id="heroFocus">
+                            <span>FOCO RECOMENDADO</span>
+                            <span id="heroFocusText">—</span>
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- Stats — valores via API (fora do primeiro viewport) -->
+        <section class="stats" aria-label="Indicadores da plataforma">
+            <div class="container">
+                <div class="stats__grid">
+                    <div class="stat-card">
+                        <strong id="campanhas">0</strong>
+                        <span>Campanhas ativas</span>
+                    </div>
+
+                    <div class="stat-card">
+                        <strong id="materiais">0</strong>
+                        <span>Materiais</span>
+                    </div>
+
+                    <div class="stat-card">
+                        <strong id="copies-count">0</strong>
+                        <span>Copies prontas</span>
+                    </div>
+
+                    <div class="stat-card">
+                        <strong id="videos">0</strong>
+                        <span>Vídeos</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+<!-- ==========================
+    DESTAQUE DO DIA — dados via banco/API
+=========================== -->
+<section class="highlight" id="divulgar-hoje">
+
+    <div class="container">
+
+        <header class="highlight__header">
+
+            <span class="highlight__eyebrow">OPERAÇÃO DO DIA</span>
+
+            <h2>
+                O que divulgar hoje
+            </h2>
+
+            <p>
+                Uma sugestão rápida para você colocar a campanha na rua.
+            </p>
+
+        </header>
+
+        <article class="highlight__card">
+
+            <div class="highlight__content">
+
+                <span class="highlight__tag" id="highlightTag"></span>
+
+                <h3 id="highlightTitle"></h3>
+
+                <p class="highlight__description" id="highlightDescription"></p>
+
+                <div class="highlight__copy-box">
+
+                    <span class="highlight__copy-label">
+                        COPY RECOMENDADA
+                    </span>
+
+                    <p id="highlightCopy"></p>
+
+                </div>
+
+                <div class="highlight__actions">
+
+                    <button
+                        type="button"
+                        class="btn"
+                        id="highlightCopyBtn">
+                        <i class="fa-regular fa-copy"></i>
+                        <span>Copiar texto</span>
+                    </button>
+
+                    <a
+                        class="btn"
+                        id="highlightDownloadStory"
+                        href="#">
+                        <i class="fa-solid fa-download"></i>
+                        <span>Baixar story</span>
+                    </a>
+
+                    <button
+                        type="button"
+                        class="btn btn--outline"
+                        id="openKitModal">
+                        <i class="fa-solid fa-box-open"></i>
+                        <span>Ver kit completo</span>
+                    </button>
+
+                </div>
+
+            </div>
+
+            <div class="highlight__media">
+
+                <img
+                    id="highlightImage"
+                    src=""
+                    alt="Material recomendado da campanha"
+                >
+
+                <div class="highlight__media-caption">
+                    <strong id="highlightMediaLabel"></strong>
+                    <span id="highlightMediaCaption"></span>
+                </div>
+
+            </div>
+
+        </article>
+
+    </div>
+
+</section>
+
+
+    <!-- ==========================
+            MODAL — Materiais da campanha
+    =========================== -->
+    <div class="modal" id="modalMateriais" role="dialog" aria-modal="true" aria-labelledby="campaignTitle" hidden>
+
+        <div class="modal__overlay" data-modal-close></div>
+
+        <div class="modal__box">
+
+            <button type="button" class="modal__close" id="closeModal" aria-label="Fechar modal" data-modal-close>
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="modal__loading" id="modalLoading" hidden>
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                <span>Carregando materiais...</span>
+            </div>
+
+            <div class="modal__error" id="modalError" hidden>
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <p id="modalErrorMessage">Não foi possível carregar os materiais.</p>
+                <button type="button" class="btn" id="modalRetry">Tentar novamente</button>
+            </div>
+
+            <div class="modal__body" id="modalBody">
+
+                <div class="modal__banner">
+                    <img id="campaignBanner" src="" alt="">
+                </div>
+
+                <div class="modal__content">
+
+                    <div class="modal__header">
+                        <span class="status" id="campaignStatus"></span>
+                        <h2 id="campaignTitle"></h2>
+                        <p id="campaignDescription"></p>
+                        <strong id="campaignPeriod"></strong>
+                    </div>
+
+                    <nav class="modal__tabs" id="campaignTabs" aria-label="Seções da campanha"></nav>
+
+                    <div class="modal__panels">
+
+                        <div class="modal__panel is-active" data-panel="materiais" id="panelMateriais">
+                            <div class="modal__top">
+                                <p id="campaignSubtitle"></p>
+                                <a id="downloadKit" class="btn btn--outline modal__kit-btn" href="#">
+                                    <i class="fa-solid fa-box-archive"></i>
+                                    Baixar kit completo
+                                </a>
+                            </div>
+                            <div id="materialsContainer" class="modal__materials"></div>
+                        </div>
+
+                        <div class="modal__panel" data-panel="visao-geral" id="panelVisaoGeral" hidden>
+                            <div class="modal__panel-content" id="visaoGeralContent"></div>
+                        </div>
+
+                        <div class="modal__panel" data-panel="copies" id="panelCopies" hidden>
+                            <div class="modal__panel-content" id="copiesContent"></div>
+                        </div>
+
+                        <div class="modal__panel" data-panel="regras" id="panelRegras" hidden>
+                            <div class="modal__panel-content" id="regrasContent"></div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==========================
+            MODAL — Visualização de imagem
+    =========================== -->
+    <div
+        class="modal modal--image-preview"
+        id="imagePreviewModal"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Visualização do material"
+        hidden
+    >
+
+        <div class="modal__overlay" data-image-preview-close></div>
+
+        <div class="modal__box modal__box--image-preview">
+
+            <button
+                type="button"
+                class="modal__close"
+                id="closeImagePreview"
+                aria-label="Fechar visualização da imagem"
+                data-image-preview-close
+            >
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <figure class="modal__image-preview-figure">
+                <img
+                    id="imagePreview"
+                    src=""
+                    alt="Visualização do material"
+                >
+            </figure>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==========================
+          Section campanha
+    =========================== -->
+
+
+    <section class="campaigns" id="campaigns">
+        <div class="container">
+
+            <div class="section-header">
+
+                <span class="section-tag">
+                    BIBLIOTECA OPERACIONAL
+                </span>
+
+                <h2>
+                    Campanhas ativas
+                </h2>
+
+                <p>
+                    Deslize para ver todas as campanhas em andamento.
+                </p>
+
+            </div>
+
+
+            <div class="campaign-filters">
+
+                <button class="active" data-filter="Todos">
+                    Todos
+                </button>
+
+                <button data-filter="Aquisição">
+                    Aquisição
+                </button>
+
+                <button data-filter="FTD">
+                    FTD
+                </button>
+
+                <button data-filter="Retenção">
+                    Retenção
+                </button>
+
+                <button data-filter="Volume">
+                    Volume
+                </button>
+
+            </div>
+
+
+            <!-- CARDS VÃO APARECER AQUI -->
+
+            <div class="campaign-grid" id="campaign-list">
+            </div>
+
+
+        </div>
+
+
+        <section class="calendar-section" id="oportunidades">
+
+            <div class="container">
+
+                <header class="calendar-section__header">
+                    <span class="calendar-section__eyebrow">PLANEJAMENTO</span>
+                    <h2>Calendário de oportunidades</h2>
+                    <p id="calendar-subtitle">Campanhas de Ago — navegue pelas setas.</p>
+                </header>
+
+                <div class="calendar-panel">
+
+                    <!-- CARD DA CAMPANHA ATUAL -->
+                    <div class="campaign-card">
+
+                        <img id="campaign-image" src="" alt="Imagem da campanha">
+
+                        <div class="campaign-card__overlay">
+
+                            <div class="campaign-card__date">
+                                <strong id="calendar-selected-day">—</strong>
+                                <span id="calendar-selected-weekday"></span>
+                            </div>
+
+                            <div class="campaign-info">
+                                <span class="campaign-card__kicker">CAMPANHA</span>
+                                <b id="campaign-coupon"></b>
+
+                                <!-- Campos mantidos para compatibilidade com o JS existente -->
+                                <h2 id="campaign-title" class="u-sr-only"></h2>
+                                <h3 id="campaign-name" class="u-sr-only"></h3>
+                                <strong id="campaign-value" class="u-sr-only"></strong>
+
+                                <button id="campaign-button" class="btn-abrir-campanha" type="button">
+                                    Conferir campanha
+                                </button>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- CALENDÁRIO -->
+                    <div class="calendar" id="calendar">
+
+                        <div class="calendar-header">
+
+                            <div class="calendar-nav">
+                                <button id="prev-month" type="button" aria-label="Mês anterior">‹</button>
+                                <button id="next-month" type="button" aria-label="Próximo mês">›</button>
+                            </div>
+
+                            <div class="calendar-campaign-label" id="calendar-campaign-label">—</div>
+
+                        </div>
+
+                        <div class="calendar-grid" id="calendar-days"></div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- CANAIS DE COMUNICAÇÃO -->
+
+        <section class="support" id="suporte">
+
+            <div class="container">
+
+                <div class="support__header">
+
+                    <span class="section-tag">
+                        SUPORTE
+                    </span>
+
+                    <h2>
+                        Precisa de ajuda?
+                    </h2>
+
+                    <p>
+                        Nossa equipe está disponível para tirar suas dúvidas
+                        e ajudar você durante sua participação.
+                    </p>
+
+                </div>
+
+
+                <div class="support__cards">
+
+
+                    <a href="#" class="support-card">
+
+                        <div class="support-card__icon">
+                            💬
+                        </div>
+
+                        <div>
+                            <h3>
+                                WhatsApp
+                            </h3>
+
+                            <p>
+                                Fale diretamente com nossa equipe.
+                            </p>
+                        </div>
+
+                    </a>
+
+
+
+                    <a href="#" class="support-card">
+
+                        <div class="support-card__icon">
+                            ✉️
+                        </div>
+
+                        <div>
+                            <h3>
+                                E-mail
+                            </h3>
+
+                            <p>
+                                Envie sua dúvida para nosso suporte.
+                            </p>
+                        </div>
+
+                    </a>
+
+
+
+                    <a href="#faq" class="support-card">
+
+                        <div class="support-card__icon">
+                            ❓
+                        </div>
+
+                        <div>
+                            <h3>
+                                Perguntas frequentes
+                            </h3>
+
+                            <p>
+                                Consulte respostas rápidas.
+                            </p>
+                        </div>
+
+                    </a>
+
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+    </section>
+
+    </main>
+
+    <!-- FOOTER -->
+
+    <footer class="footer">
+
+        <div class="container">
+
+
+            <div class="footer__content">
+
+
+                <!-- LOGO -->
+
+                <div class="footer__brand">
+
+                    <img src="images/NOVO LOGO SHIVER BROKERR-04.png" alt="Shiver">
+
+                    <p>
+                        Participe, acompanhe sua campanha
+                        e concorra aos melhores prêmios.
+                    </p>
+
+                </div>
+
+
+
+                <!-- LINKS -->
+
+                <div class="footer__links">
+
+                    <h3>
+                        Navegação
+                    </h3>
+
+                    <a href="#banner">
+                        Home
+                    </a>
+
+                    <a href="#how-it-works">
+                        Como participar
+                    </a>
+
+                    <a href="#prize">
+                        Prêmio
+                    </a>
+
+                    <a href="#faq">
+                        Regulamento
+                    </a>
+
+                </div>
+
+
+
+
+                <!-- SUPORTE -->
+
+                <div class="footer__contact">
+
+                    <h3>
+                        Atendimento
+                    </h3>
+
+
+                    <a href="#">
+                        WhatsApp
+                    </a>
+
+
+                    <a href="#">
+                        E-mail
+                    </a>
+
+
+                    <a href="#suporte">
+                        Central de ajuda
+                    </a>
+
+
+                </div>
+
+
+
+            </div>
+
+
+
+            <div class="footer__bottom">
+
+
+                <p>
+                    © 2026 Todos os direitos reservados.
+                </p>
+
+
+                <div class="footer__legal">
+
+                    <a href="#">
+                        Política de privacidade
+                    </a>
+
+                    <a href="#">
+                        Termos de uso
+                    </a>
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+    </footer>
+
+    <div class="campaign-modal" id="campaign-modal">
+
+
+        <div class="modal-content">
+
+
+            <button class="modal-close" id="modal-close">
+                ×
+            </button>
+
+
+
+            <!-- CABEÇALHO -->
+
+            <img id="modal-image" alt="Imagem campanha">
+
+
+            <span id="modal-category"></span>
+
+
+            <h2 id="modal-title"></h2>
+
+
+            <!-- ABAS -->
+
+            <div class="modal-tabs">
+
+
+                <button class="tab-btn active" data-tab="overview">
+                    Visão geral
+                </button>
+
+
+                <button class="tab-btn" data-tab="materials">
+                    Materiais
+                </button>
+
+
+                <button class="tab-btn" data-tab="copies">
+                    Copies
+                </button>
+
+
+                <button class="tab-btn" data-tab="rules">
+                    Regras
+                </button>
+
+
+            </div>
+
+
+
+            <!-- CONTEÚDOS -->
+
+
+            <!-- VISÃO GERAL -->
+
+            <div class="tab-content active" id="overview">
+
+
+                <p id="modal-description"></p>
+
+
+                <div class="modal-info">
+
+
+                    <div>
+                        <span>Período</span>
+                        <p>
+                            <b id="modal-start"></b>
+                            —
+                            <b id="modal-end"></b>
+                        </p>
+                    </div>
+
+
+                    <div>
+                        <span>Cupom</span>
+                        <p id="modal-coupon"></p>
+                    </div>
+
+
+                    <div>
+                        <span>Depósito mínimo</span>
+                        <p id="modal-deposit"></p>
+                    </div>
+
+
+                    <div>
+                        <span>Prêmio</span>
+                        <p id="modal-prize"></p>
+                    </div>
+
+
+                    <div>
+                        <span>Público recomendado</span>
+                        <p id="modal-audience"></p>
+                    </div>
+
+
+                    <div>
+                        <span>Objetivo</span>
+                        <p id="modal-objective"></p>
+                    </div>
+
+
+                </div>
+
+
+
+                <h3>
+                    Resumo
+                </h3>
+
+
+                <p id="modal-summary"></p>
+
+
+
+                <h3>
+                    Mecânica
+                </h3>
+
+
+                <ol id="modal-mechanics"></ol>
+
+
+
+                <h3 class="modal-section-title">
+                    Ângulos de divulgação
+                </h3>
+
+
+                <div id="modal-angles"></div>
+
+
+
+            </div>
+
+
+
+
+
+            <!-- MATERIAIS -->
+
+            <div class="tab-content" id="materials">
+
+
+                <h3>
+                    Materiais
+                </h3>
+
+
+                <div id="modal-materials"></div>
+
+
+            </div>
+
+
+
+
+
+            <!-- COPIES -->
+
+            <div class="tab-content" id="copies">
+
+
+                <h3>
+                    Copies
+                </h3>
+
+
+                <div id="modal-copies"></div>
+
+
+            </div>
+
+
+
+
+
+            <!-- REGRAS -->
+
+            <div class="tab-content" id="rules">
+
+
+                <h3>
+                    Regras
+                </h3>
+
+
+                <div id="modal-rules">
+                </div>
+
+
+            </div>
+
+            <!-- JavaScript -->
+            <script src="js/loader.js"></script>
+            <script src="js/api.js?v=20260813visivel"></script>
+            <script src="js/navbar.js"></script>
+            <script src="js/stats.js"></script>
+            <script src="js/destaque.js?v=20260813visivel"></script>
+            <script src="js/campanha.js?v=20260813visivel"></script>
+            <script src="js/calendario.js?v=20260813visivel"></script>
+            <script src="js/modal.js?v=20260812preview-x"></script>
+            <script src="js/campanha-modal.js?v=20260812preview-x"></script>
+            <script src="js/materiais.js"></script>
+            <script src="js/main.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nova Campanha - Shiver</title>
+
+    <link rel="stylesheet" href="../css/admin/admin.css">
+    <link rel="stylesheet" href="../css/admin/campanha-form.css?v=20260813azul">
+    <link rel="stylesheet" href="../css/admin/admin-theme.css">
+    <link rel="stylesheet" href="../css/admin/notificacoes-admin.css">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+
+<body>
+
+    <header class="admin-header">
+        <div class="admin-header__left">
+            <button type="button" id="voltarBtn" class="btn-voltar">
+                <i class="fa-solid fa-arrow-left"></i>
+                Voltar
+            </button>
+            <h1 id="pageTitle">Nova Campanha</h1>
+        </div>
+        <div class="admin-header__actions">
+            <a href="../index.html" class="btn-site-publico">
+                Voltar para o site público
+            </a>
+        </div>
+    </header>
+
+    <main class="admin-main">
+
+        <form id="campanhaForm">
+
+            <section class="form-section">
+                <div class="form-section__header">
+                    <div>
+                        <h2>Dados da campanha</h2>
+                        <p>Preencha as informações principais da campanha.</p>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+
+                    <div class="form-group form-group--full">
+                        <label for="titulo">Título</label>
+                        <input
+                            type="text"
+                            id="titulo"
+                            name="titulo"
+                            placeholder="Ex: Campanha Haval H6 GT"
+                            required
+                        >
+                        <small class="form-hint">Nome da campanha (lista, modal, cards de campanhas).</small>
+                    </div>
+
+                    <div class="form-group form-group--full">
+                        <label for="texto_header">Texto do header</label>
+                        <input
+                            type="text"
+                            id="texto_header"
+                            name="texto_header"
+                            placeholder="Ex: Haval H9 GT"
+                        >
+                        <small class="form-hint">Usado somente no hero da home (título grande da seção principal).</small>
+                    </div>
+
+                    <div class="form-group form-group--full">
+                        <label for="descricao">Descrição curta</label>
+                        <textarea
+                            id="descricao"
+                            name="descricao"
+                            rows="2"
+                            placeholder="Ex: O GT dos traders pode ser seu."
+                        ></textarea>
+                        <small class="form-hint">Aparece abaixo do título no modal da campanha.</small>
+                    </div>
+
+                    <div class="form-group form-group--full">
+                        <label for="resumo">Resumo</label>
+                        <textarea
+                            id="resumo"
+                            name="resumo"
+                            rows="4"
+                            placeholder="Ex: Campanha voltada para engajamento, movimentação nas redes sociais..."
+                        ></textarea>
+                        <small class="form-hint">Texto da seção RESUMO na aba Visão geral do modal.</small>
+                    </div>
+
+                    <div class="form-group form-group--full">
+                        <label>Categorias</label>
+                        <div class="checkbox-group" id="categoriaGroup" role="group" aria-label="Categorias da campanha">
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="categoria" value="Aquisição">
+                                <span>Aquisição</span>
+                            </label>
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="categoria" value="FTD">
+                                <span>FTD</span>
+                            </label>
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="categoria" value="Retenção">
+                                <span>Retenção</span>
+                            </label>
+                            <label class="checkbox-option">
+                                <input type="checkbox" name="categoria" value="Volume">
+                                <span>Volume</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="status">Status</label>
+                        <select id="status" name="status" disabled>
+                            <option value="agendada">Agendada</option>
+                            <option value="ativa">Ativa</option>
+                            <option value="finalizada">Finalizada</option>
+                        </select>
+                        <small class="form-hint">
+                            Calculado automaticamente pelas datas (não é editável manualmente):
+                            antes do início = Agendada, no período = Ativa, a partir da data fim = Finalizada.
+                        </small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="data_inicio">Data de início</label>
+                        <input type="date" id="data_inicio" name="data_inicio" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="data_fim">Data de término</label>
+                        <input type="date" id="data_fim" name="data_fim" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cupom">Cupom</label>
+                        <input
+                            type="text"
+                            id="cupom"
+                            name="cupom"
+                            placeholder="Ex: BULLCAR"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="deposito_minimo">Depósito mínimo</label>
+                        <input
+                            type="number"
+                            id="deposito_minimo"
+                            name="deposito_minimo"
+                            min="0"
+                            step="0.01"
+                            placeholder="Ex: 150"
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="premio">Prêmio</label>
+                        <input
+                            type="text"
+                            id="premio"
+                            name="premio"
+                            placeholder="Ex: HAVAL H6 GT 0km"
+                        >
+                    </div>
+
+                    <div class="form-group form-group--full">
+                        <label>Imagem do card</label>
+
+                        <input
+                            type="hidden"
+                            id="imagem_card"
+                            name="imagem_card"
+                            value=""
+                        >
+
+                        <input
+                            type="file"
+                            id="imagem_card_file"
+                            accept="image/png,image/jpeg,image/jpg,image/webp"
+                            hidden
+                        >
+
+                        <div
+                            id="imagemCardDropzone"
+                            class="upload-dropzone"
+                            tabindex="0"
+                            role="button"
+                            aria-label="Área de upload da imagem do card"
+                        >
+
+                            <div class="upload-dropzone__empty" id="imagemCardEmpty">
+                                <i class="fa-solid fa-cloud-arrow-up"></i>
+                                <p>Arraste e solte a imagem aqui</p>
+                                <span>PNG, JPG ou WEBP · máx. 5 MB</span>
+                                <button type="button" id="imagemCardSelectBtn" class="btn-secondary">
+                                    Selecionar imagem
+                                </button>
+                            </div>
+
+                            <div class="upload-dropzone__preview" id="imagemCardPreview" hidden>
+                                <img id="imagemCardPreviewImg" alt="Preview da imagem do card">
+                                <div class="upload-dropzone__meta">
+                                    <strong id="imagemCardFileName">imagem</strong>
+                                    <div class="upload-dropzone__actions">
+                                        <button type="button" id="imagemCardReplaceBtn" class="btn-secondary">
+                                            Trocar
+                                        </button>
+                                        <button type="button" id="imagemCardRemoveBtn" class="btn-secondary">
+                                            Remover
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="upload-dropzone__status" id="imagemCardStatus" hidden></div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <section class="form-section form-section--visao">
+                <div class="form-section__header">
+                    <div>
+                        <span class="form-section__eyebrow">Divulgação</span>
+                        <h2>Visão geral da campanha</h2>
+                        <p>Público, objetivo, mecânica e ângulos exibidos na página e no modal.</p>
+                    </div>
+                </div>
+
+                <div class="visao-form">
+                    <div class="visao-field">
+                        <label for="publico_recomendado">Público recomendado</label>
+                        <input
+                            type="text"
+                            id="publico_recomendado"
+                            name="publico_recomendado"
+                            placeholder="Ex: Retenção · Reativação · Aquisição de novos usuários"
+                        >
+                    </div>
+
+                    <div class="visao-field">
+                        <span class="visao-field__label">Objetivo</span>
+                        <div
+                            class="objetivo-chips"
+                            id="objetivoGroup"
+                            role="group"
+                            aria-label="Objetivos da campanha"
+                        >
+                            <label class="objetivo-chip">
+                                <input type="checkbox" name="objetivo" value="Retenção">
+                                <span>Retenção</span>
+                            </label>
+                            <label class="objetivo-chip">
+                                <input type="checkbox" name="objetivo" value="Redepósito">
+                                <span>Redepósito</span>
+                            </label>
+                            <label class="objetivo-chip">
+                                <input type="checkbox" name="objetivo" value="Aquisição">
+                                <span>Aquisição</span>
+                            </label>
+                            <label class="objetivo-chip">
+                                <input type="checkbox" name="objetivo" value="Volume">
+                                <span>Volume</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="visao-field">
+                        <div class="visao-field__row">
+                            <span class="visao-field__label">Mecânica</span>
+                            <button type="button" id="adicionarMecanicaBtn" class="btn-add-inline">
+                                <i class="fa-solid fa-plus"></i>
+                                Adicionar passo
+                            </button>
+                        </div>
+                        <ol id="mecanicaContainer" class="mecanica-list"></ol>
+                    </div>
+
+                    <div class="visao-field">
+                        <div class="visao-field__row">
+                            <span class="visao-field__label">Ângulos de divulgação</span>
+                            <button type="button" id="adicionarAnguloBtn" class="btn-add-inline">
+                                <i class="fa-solid fa-plus"></i>
+                                Adicionar ângulo
+                            </button>
+                        </div>
+                        <div id="angulosContainer" class="angulos-list"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-section form-section--copies">
+                <div class="form-section__header">
+                    <div>
+                        <span class="form-section__eyebrow">Conteúdo</span>
+                        <h2>Copies da campanha</h2>
+                        <p>Adicione os textos que serão utilizados na divulgação da campanha. Use o botão abaixo para incluir quantas copies precisar.</p>
+                    </div>
+                </div>
+
+                <div id="copiesContainer" class="copies-list" data-empty="Nenhuma copy adicionada. Clique em “Adicionar copy”."></div>
+
+                <button type="button" id="adicionarCopyBtn" class="btn-add-copy">
+                    <i class="fa-solid fa-plus"></i>
+                    Adicionar copy
+                </button>
+            </section>
+
+            <section class="form-section form-section--regras">
+                <div class="form-section__header">
+                    <div>
+                        <span class="form-section__eyebrow">Condições</span>
+                        <h2>Regras da campanha</h2>
+                        <p>Adicione as regras e condições da campanha conforme a necessidade.</p>
+                    </div>
+                </div>
+
+                <div id="regrasContainer" class="regras-list" data-empty="Nenhuma regra adicionada. Clique em “Adicionar regra”."></div>
+
+                <button type="button" id="adicionarRegraBtn" class="btn-add-regra">
+                    <i class="fa-solid fa-plus"></i>
+                    Adicionar regra
+                </button>
+            </section>
+
+            <section class="form-section">
+                <div class="form-section__header">
+                    <div>
+                        <h2>Materiais da campanha</h2>
+                        <p>
+                            Adicione materiais de divulgação conforme precisar.
+                            Você também pode selecionar vários arquivos de uma vez.
+                        </p>
+                    </div>
+                </div>
+
+                <div id="materiaisContainer" class="materiais-list" data-empty="Nenhum material adicionado. Clique em “Adicionar material”."></div>
+
+                <input
+                    type="file"
+                    id="materiaisBulkFile"
+                    accept="image/png,image/jpeg,image/jpg,image/webp,video/*,.pdf,.zip"
+                    multiple
+                    hidden
+                >
+
+                <div class="materiais-actions">
+                    <button type="button" id="adicionarMaterialBtn" class="btn-secondary">
+                        <i class="fa-solid fa-plus"></i>
+                        Adicionar material
+                    </button>
+                    <button type="button" id="adicionarMateriaisLoteBtn" class="btn-secondary">
+                        <i class="fa-solid fa-files"></i>
+                        Adicionar vários arquivos
+                    </button>
+                </div>
+            </section>
+
+            <div class="form-actions">
+                <button type="button" id="cancelarBtn" class="btn-secondary">
+                    Cancelar
+                </button>
+
+                <button type="submit" id="salvarBtn" class="btn-primary">
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    Salvar campanha
+                </button>
+            </div>
+
+        </form>
+
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="./supabase-client.js"></script>
+    <script src="./notificacoes-admin.js?v=20260812n1"></script>
+    <script src="./campanha-form.js?v=20260812m4"></script>
+
+</body>
+
+</html>

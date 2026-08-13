@@ -1,0 +1,117 @@
+/*==========================
+        FOOTER — Partner Hub
+==========================*/
+
+.footer {
+    background:
+        linear-gradient(180deg, rgba(11, 16, 24, 0.4) 0%, #070910 35%),
+        #070910;
+    border-top: 1px solid var(--border);
+    padding: 4.25rem 0 1.6rem;
+}
+
+.footer__content {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 2.5rem;
+}
+
+.footer__brand img {
+    width: 140px;
+    margin-bottom: 1.1rem;
+    opacity: 0.95;
+}
+
+.footer__brand p {
+    max-width: 20rem;
+    color: var(--text-muted);
+    line-height: 1.7;
+}
+
+.footer h3 {
+    color: #fff;
+    font-size: 0.92rem;
+    margin-bottom: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.footer a {
+    display: block;
+    color: var(--text-muted);
+    text-decoration: none;
+    margin-bottom: 0.7rem;
+    transition: color 0.25s ease, transform 0.25s ease;
+}
+
+.footer a:hover {
+    color: var(--primary);
+    transform: translateX(2px);
+}
+
+.footer__bottom {
+    margin-top: 2.5rem;
+    padding-top: 1.35rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.25rem;
+}
+
+.footer__bottom p {
+    color: #6b7280;
+    font-size: 0.85rem;
+}
+
+.footer__legal {
+    display: flex;
+    gap: 1.4rem;
+}
+
+.footer__legal a {
+    margin: 0;
+    font-size: 0.85rem;
+}
+
+@media (max-width: 768px) {
+    .footer {
+        padding: 3rem 0 1.5rem;
+    }
+
+    .footer__content {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    .footer__brand {
+        text-align: center;
+    }
+
+    .footer__brand img {
+        margin: auto auto 1.1rem;
+    }
+
+    .footer__brand p {
+        margin: auto;
+    }
+
+    .footer__links,
+    .footer__contact {
+        text-align: center;
+    }
+
+    .footer a:hover {
+        transform: none;
+    }
+
+    .footer__bottom {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .footer__legal {
+        flex-direction: column;
+        gap: 0.55rem;
+    }
+}

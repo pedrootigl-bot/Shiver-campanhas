@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar Campanhas - Shiver Admin</title>
+
+    <link rel="stylesheet" href="../css/admin/admin-theme.css">
+    <link rel="stylesheet" href="../css/admin/campanhas-board.css">
+    <link rel="stylesheet" href="../css/admin/notificacoes-admin.css">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+
+<body class="admin-board">
+
+    <aside class="admin-sidebar">
+        <a href="dashboard.html" class="admin-sidebar__brand">
+            <span class="admin-sidebar__logo"><i class="fa-solid fa-chart-simple"></i></span>
+            <strong>Shiver</strong>
+        </a>
+
+        <nav class="admin-sidebar__nav" aria-label="Menu admin">
+            <a href="dashboard.html"><i class="fa-solid fa-gauge-high"></i><span>Dashboard</span></a>
+            <a href="campanhas.html" class="is-active"><i class="fa-solid fa-bullhorn"></i><span>Campanhas</span></a>
+            <a href="gerenciar-materiais.html"><i class="fa-regular fa-image"></i><span>Materiais</span></a>
+            <a href="gerenciar-copies.html"><i class="fa-regular fa-file-lines"></i><span>Copies</span></a>
+        </nav>
+    </aside>
+
+    <div class="admin-board__main">
+
+        <header class="admin-topbar">
+            <h1>Shiver Admin</h1>
+
+            <label class="admin-search" for="campanhaSearch">
+                <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                <input
+                    id="campanhaSearch"
+                    type="search"
+                    placeholder="Buscar por título, cupom, categoria..."
+                    autocomplete="off"
+                    spellcheck="false"
+                >
+                <kbd>CTRL K</kbd>
+            </label>
+
+            <div class="admin-topbar__right">
+                <div class="admin-user">
+                    <span class="admin-user__avatar">A</span>
+                    <div>
+                        <strong>Admin Shiver</strong>
+                        <small>Administrador</small>
+                    </div>
+                </div>
+                <button type="button" id="voltarBtn" class="admin-ghost-btn">Dashboard</button>
+                <a href="../index.html" class="btn-site-publico">
+                    Voltar para o site público
+                </a>
+            </div>
+        </header>
+
+        <section class="admin-stats" aria-label="Indicadores">
+            <article class="admin-stat-card">
+                <span class="admin-stat-card__icon"><i class="fa-solid fa-bullhorn"></i></span>
+                <div>
+                    <span>Campanhas</span>
+                    <strong id="statCampanhas">0</strong>
+                    <small id="statCampanhasHint">carregando...</small>
+                </div>
+            </article>
+            <article class="admin-stat-card">
+                <span class="admin-stat-card__icon"><i class="fa-regular fa-image"></i></span>
+                <div>
+                    <span>Materiais</span>
+                    <strong id="statMateriais">0</strong>
+                    <small>biblioteca ativa</small>
+                </div>
+            </article>
+            <article class="admin-stat-card">
+                <span class="admin-stat-card__icon"><i class="fa-regular fa-file-lines"></i></span>
+                <div>
+                    <span>Copies</span>
+                    <strong id="statCopies">0</strong>
+                    <small>prontas para uso</small>
+                </div>
+            </article>
+            <article class="admin-stat-card">
+                <span class="admin-stat-card__icon"><i class="fa-solid fa-video"></i></span>
+                <div>
+                    <span>Vídeos</span>
+                    <strong id="statVideos">0</strong>
+                    <small>conteúdos em vídeo</small>
+                </div>
+            </article>
+        </section>
+
+        <div class="admin-grid">
+
+            <div class="admin-grid__primary">
+
+                <section class="featured-card" id="featuredCampaign">
+                    <div class="featured-card__media">
+                        <div class="featured-carousel" id="featuredCarousel">
+                            <div class="featured-carousel__track" id="featuredCarouselTrack"></div>
+                            <button type="button" class="featured-carousel__nav featured-carousel__nav--prev" id="featuredPrev" aria-label="Anterior">
+                                <i class="fa-solid fa-chevron-left"></i>
+                            </button>
+                            <button type="button" class="featured-carousel__nav featured-carousel__nav--next" id="featuredNext" aria-label="Próximo">
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </button>
+                            <div class="featured-carousel__dots" id="featuredCarouselDots"></div>
+                        </div>
+                    </div>
+                    <div class="featured-card__body">
+                        <span class="featured-card__eyebrow">Operação do Dia</span>
+                        <h2 id="featuredTitle">—</h2>
+                        <p id="featuredDescription">Selecione ou cadastre uma campanha para destacar.</p>
+
+                        <div class="featured-card__meta">
+                            <div><span>Categoria</span><strong id="featuredCategoria">—</strong></div>
+                            <div><span>Status</span><strong id="featuredStatus">—</strong></div>
+                            <div><span>Período</span><strong id="featuredPeriodo">—</strong></div>
+                            <div><span>Prêmio</span><strong id="featuredPremio">—</strong></div>
+                        </div>
+
+                        <div id="featuredPublicacao" class="featured-card__publicacao" aria-live="polite"></div>
+
+                        <div class="featured-card__actions">
+                            <button type="button" class="btn-green" id="featuredVerDetalhes">
+                                Ver detalhes <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                            <button type="button" class="btn-outline" id="featuredEditar">Editar</button>
+                            <button type="button" class="btn-outline" id="featuredMateriais">Ver materiais</button>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="campaigns-panel">
+                    <div class="campaigns-panel__header">
+                        <div class="campaigns-panel__title">
+                            <h2>Gerenciar Campanhas</h2>
+                            <span class="campaigns-count" id="campanhasCount">0</span>
+                        </div>
+
+                        <div class="campaigns-filters">
+                            <label class="campaigns-filter" for="filtroCategoria">
+                                <span class="campaigns-filter__label">Categoria</span>
+                                <span class="campaigns-filter__control">
+                                    <i class="fa-solid fa-tags campaigns-filter__icon" aria-hidden="true"></i>
+                                    <select id="filtroCategoria" aria-label="Filtrar por categoria">
+                                        <option value="">Todas as categorias</option>
+                                    </select>
+                                    <i class="fa-solid fa-chevron-down campaigns-filter__chevron" aria-hidden="true"></i>
+                                </span>
+                            </label>
+
+                            <label class="campaigns-filter" for="filtroStatus">
+                                <span class="campaigns-filter__label">Status</span>
+                                <span class="campaigns-filter__control">
+                                    <i class="fa-solid fa-signal campaigns-filter__icon" aria-hidden="true"></i>
+                                    <select id="filtroStatus" aria-label="Filtrar por status">
+                                        <option value="">Todos os status</option>
+                                        <option value="agendada">Agendada</option>
+                                        <option value="ativa">Ativa</option>
+                                        <option value="finalizada">Finalizada</option>
+                                    </select>
+                                    <i class="fa-solid fa-chevron-down campaigns-filter__chevron" aria-hidden="true"></i>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="campaigns-table-wrap">
+                        <table class="campaigns-table">
+                            <thead>
+                                <tr>
+                                    <th>Campanha</th>
+                                    <th>Categoria</th>
+                                    <th>Status</th>
+                                    <th>Início</th>
+                                    <th>Fim</th>
+                                    <th>Prêmio</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="campanhasContainer"></tbody>
+                        </table>
+                    </div>
+
+                    <div class="campaigns-panel__footer">
+                        <button type="button" id="verTodasCampanhasBtn" class="campaigns-expand-btn" hidden>
+                            Ver todas campanhas
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </button>
+                    </div>
+                </section>
+
+            </div>
+
+            <aside class="admin-grid__side">
+                <section class="side-card">
+                    <h3>Ações Rápidas</h3>
+                    <div class="quick-actions">
+                        <button type="button" class="quick-action quick-action--primary" id="novaCampanha">
+                            <span><i class="fa-solid fa-plus"></i> Nova campanha</span>
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </section>
+
+                <section class="side-card">
+                    <h3>Atividade Recente</h3>
+                    <ul class="activity-list" id="atividadeRecente">
+                        <li>
+                            <span class="activity-dot activity-dot--green"></span>
+                            <div>
+                                <strong>Campanhas sincronizadas</strong>
+                                <small>agora</small>
+                            </div>
+                        </li>
+                    </ul>
+                </section>
+            </aside>
+
+        </div>
+    </div>
+
+    <div id="pageTransition" class="page-transition" hidden aria-hidden="true">
+        <div class="page-transition__panel">
+            <span class="page-transition__glow"></span>
+            <div class="page-transition__content">
+                <i class="fa-solid fa-bullhorn"></i>
+                <strong id="pageTransitionTitle">Abrindo campanha...</strong>
+                <small>Carregando detalhes</small>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="./supabase-client.js"></script>
+    <script src="./notificacoes-admin.js?v=20260812n1"></script>
+    <script src="./campanhas.js?v=20260812p1"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,158 @@
+/* ======================================================
+   GERENCIAR COPIES (extensão do layout de materiais)
+====================================================== */
+
+.gc-copies-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+
+.gc-copy-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 1rem;
+    align-items: start;
+    padding: 1.1rem 1.15rem;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(11, 18, 28, 0.88);
+}
+
+.gc-copy-card__badge {
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: 0.45rem;
+    padding: 0.15rem 0.55rem;
+    border-radius: 999px;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    background: rgba(59, 130, 246, 0.1);
+    color: #93c5fd;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.gc-copy-card h3 {
+    margin: 0 0 0.4rem;
+    font-size: 1.05rem;
+    color: #f8fafc;
+}
+
+.gc-copy-card__texto {
+    margin: 0 0 0.65rem;
+    color: #b6c0b8;
+    font-size: 0.92rem;
+    line-height: 1.55;
+    white-space: pre-wrap;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.gc-copy-card__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.gc-copy-card__tags span {
+    padding: 0.2rem 0.55rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.04);
+    color: #9ca3af;
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+.gc-copy-card__actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+    min-width: 220px;
+}
+
+.gc-copy-card__actions .gm-btn {
+    width: 100%;
+}
+
+.gc-form-row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.75rem;
+    margin-top: 0.25rem;
+}
+
+.gm-modal__form textarea {
+    width: 100%;
+    padding: 0.7rem 0.85rem;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(4, 10, 20, 0.65);
+    color: #e4eaf6;
+    font: inherit;
+    resize: vertical;
+    min-height: 120px;
+}
+
+.gc-form-status {
+    margin: 0.85rem 0 0;
+    font-size: 0.88rem;
+    font-weight: 600;
+}
+
+.gc-form-status.is-error {
+    color: #fca5a5;
+}
+
+.gc-form-status.is-success {
+    color: #93c5fd;
+}
+
+.gc-view-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin-bottom: 0.85rem;
+}
+
+.gc-view-meta span {
+    padding: 0.25rem 0.6rem;
+    border-radius: 8px;
+    border: 1px solid rgba(59, 130, 246, 0.28);
+    background: rgba(59, 130, 246, 0.1);
+    color: #93c5fd;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.gc-view-texto {
+    margin: 0;
+    padding: 1rem;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(4, 10, 20, 0.65);
+    color: #e4eaf6;
+    font: inherit;
+    font-size: 0.95rem;
+    line-height: 1.55;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+@media (max-width: 720px) {
+    .gc-copy-card {
+        grid-template-columns: 1fr;
+    }
+
+    .gc-copy-card__actions {
+        min-width: 0;
+    }
+
+    .gc-form-row {
+        grid-template-columns: 1fr;
+    }
+}
