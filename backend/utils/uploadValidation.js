@@ -91,6 +91,63 @@ function obterExtensao(nomeArquivo = "", mime = "") {
     return "";
 }
 
+/**
+ * Detecta a extensão real pelo conteúdo (magic bytes).
+ * Usado no kit ZIP quando o título do material não tem .png/.pdf/.mp4.
+ */
+function extensaoPorAssinatura(buffer) {
+    if (!buffer || buffer.length < 12) {
+        return "";
+    }
+
+    const b0 = buffer[0];
+    const b1 = buffer[1];
+    const b2 = buffer[2];
+    const b3 = buffer[3];
+
+    if (b0 === 0x89 && b1 === 0x50 && b2 === 0x4e && b3 === 0x47) {
+        return "png";
+    }
+    if (b0 === 0xff && b1 === 0xd8 && b2 === 0xff) {
+        return "jpg";
+    }
+    if (b0 === 0x47 && b1 === 0x49 && b2 === 0x46 && b3 === 0x38) {
+        return "gif";
+    }
+    if (b0 === 0x25 && b1 === 0x50 && b2 === 0x44 && b3 === 0x46) {
+        return "pdf";
+    }
+    if (
+        b0 === 0x50
+        && b1 === 0x4b
+        && (b2 === 0x03 || b2 === 0x05 || b2 === 0x07)
+    ) {
+        return "zip";
+    }
+    if (
+        b0 === 0x52 && b1 === 0x49 && b2 === 0x46 && b3 === 0x46
+        && buffer[8] === 0x57 && buffer[9] === 0x45
+        && buffer[10] === 0x42 && buffer[11] === 0x50
+    ) {
+        return "webp";
+    }
+    if (b0 === 0x1a && b1 === 0x45 && b2 === 0xdf && b3 === 0xa3) {
+        return "webm";
+    }
+
+    const marca = Buffer.from(buffer.slice(4, 8)).toString("ascii");
+    if (marca === "ftyp") {
+        const brand = Buffer.from(buffer.slice(8, 12))
+            .toString("ascii")
+            .replace(/\0/g, "")
+            .trim();
+        if (brand === "qt") return "mov";
+        return "mp4";
+    }
+
+    return "";
+}
+
 function sanitizarNomeOriginal(nomeArquivo = "") {
     const base = path.basename(String(nomeArquivo));
     const limpo = base
@@ -234,5 +291,7 @@ module.exports = {
     normalizarTipo,
     validarUpload,
     limiteMaximoGeral,
-    sanitizarNomeOriginal
+    sanitizarNomeOriginal,
+    obterExtensao,
+    extensaoPorAssinatura
 };

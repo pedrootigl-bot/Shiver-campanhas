@@ -2,6 +2,10 @@ const express = require("express");
 const router = express.Router();
 const archiver = require("archiver");
 const supabase = require("../config/supabase");
+const {
+    nomeArquivoItem,
+    sanitizarNomeZip
+} = require("../utils/nomeArquivoDownload");
 
 /**
  * Extrai bucket + path de URL pública do Supabase Storage.
@@ -64,19 +68,6 @@ function pastaPorFormatoMaterial(item) {
     if (legado.includes("banner")) return "banners";
 
     return "outros";
-}
-
-function nomeArquivoItem(item, fallbackIndex) {
-    const origem =
-        item.nome
-        || item.titulo
-        || item.arquivo
-        || item.url
-        || `arquivo-${fallbackIndex}`;
-
-    const base = String(origem).split("?")[0];
-    const nome = base.substring(base.lastIndexOf("/") + 1);
-    return nome || `arquivo-${fallbackIndex}`;
 }
 
 async function baixarBufferItem(item) {
@@ -176,7 +167,7 @@ router.get("/kit/:campanha_id", async (req, res) => {
             }
 
             const pasta = pastaPorFormatoMaterial(item);
-            const nomeBase = nomeArquivoItem(item, i + 1);
+            const nomeBase = nomeArquivoItem(item, i + 1, buffer);
 
             entradas.push({
                 buffer,
@@ -288,10 +279,11 @@ router.get("/file", async (req, res) => {
             });
         }
 
-        const nomeSeguro = (nomeQuery || nomeArquivoItem({ url }, 1))
-            .replace(/[\\/]+/g, "_")
-            .replace(/"/g, "")
-            .slice(0, 180) || "arquivo";
+        const nomeSeguro = sanitizarNomeZip(
+            nomeQuery
+                ? nomeArquivoItem({ url, nome: nomeQuery }, 1, buffer)
+                : nomeArquivoItem({ url }, 1, buffer)
+        );
 
         res.setHeader(
             "Content-Disposition",
