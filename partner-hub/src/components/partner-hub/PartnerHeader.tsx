@@ -108,8 +108,8 @@ const links: Array<{
   index: string
   icon: () => ReactNode
 }> = [
-  { href: '#campanhas', label: 'Campanhas', index: '01', icon: IconCampaigns },
-  { href: '#materiais', label: 'Materiais', index: '02', icon: IconMaterials },
+  { href: '#materiais', label: 'Materiais', index: '01', icon: IconMaterials },
+  { href: '#campanhas', label: 'Campanhas', index: '02', icon: IconCampaigns },
   { href: '#calendario', label: 'Calendário', index: '03', icon: IconCalendar },
   { href: '#suporte', label: 'Suporte', index: '04', icon: IconSupport },
 ]
