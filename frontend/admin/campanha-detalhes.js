@@ -1506,12 +1506,78 @@ document.addEventListener(
 // HISTÓRICO / AUDITORIA
 // ======================================================
 
-function rotuloAcaoHistorico(acao) {
-    const valor = String(acao || "").trim().toLowerCase();
-    if (valor === "criada") return "Campanha criada";
-    if (valor === "atualizada") return "Campanha atualizada";
-    if (valor === "excluída" || valor === "excluida") return "Campanha excluída";
-    return acao || "Evento";
+const LABELS_HISTORICO = {
+    titulo: "Título",
+    nome: "Nome",
+    texto_header: "Texto do header",
+    descricao: "Descrição",
+    resumo: "Visão geral",
+    visao_geral: "Visão geral",
+    categoria: "Categoria",
+    objetivo: "Objetivo",
+    publico_recomendado: "Público recomendado",
+    mecanica: "Mecânica",
+    premio: "Prêmio",
+    cupom: "Cupom",
+    deposito_minimo: "Depósito mínimo",
+    data_inicio: "Data de início",
+    data_fim: "Data de encerramento",
+    status: "Status",
+    imagem_card: "Imagem do card",
+    banner: "Banner",
+    angulos_divulgacao: "Ângulos de divulgação"
+};
+
+const STATUS_HISTORICO = {
+    rascunho: "Rascunho",
+    agendada: "Agendada",
+    ativa: "Ativa",
+    finalizada: "Finalizada",
+    inativa: "Inativa"
+};
+
+function labelCampoHistorico(campo) {
+    if (LABELS_HISTORICO[campo]) {
+        return LABELS_HISTORICO[campo];
+    }
+
+    return String(campo || "")
+        .replace(/_/g, " ")
+        .replace(/^\w/, (letra) => letra.toUpperCase()) || "Campo";
+}
+
+function rotuloAcaoHistorico(acao, quantidade) {
+    const valor = String(acao || "").trim();
+    const chave = valor.toUpperCase();
+    const qtd = Number(quantidade) || 0;
+
+    if (chave === "UPDATE" || valor.toLowerCase() === "atualizada") {
+        if (qtd === 1) return "Alterou 1 informação da campanha";
+        if (qtd > 1) return `Alterou ${qtd} informações da campanha`;
+        return "Informações da campanha alteradas";
+    }
+
+    if (chave === "CREATE" || valor.toLowerCase() === "criada") {
+        return "Campanha criada";
+    }
+
+    if (
+        chave === "DELETE"
+        || valor.toLowerCase() === "excluída"
+        || valor.toLowerCase() === "excluida"
+    ) {
+        return "Campanha excluída";
+    }
+
+    if (chave === "PUBLISH" || chave === "ACTIVATE") {
+        return "Campanha ativada";
+    }
+
+    if (chave === "PAUSE") return "Campanha pausada";
+    if (chave === "FINISH") return "Campanha encerrada";
+    if (chave === "DUPLICATE") return "Campanha duplicada";
+
+    return valor || "Evento";
 }
 
 function formatarDataHoraHistorico(valor) {
@@ -1537,13 +1603,24 @@ function formatarDataHoraHistorico(valor) {
     return `${dataFmt} às ${horaFmt}`;
 }
 
-function formatarValorHistorico(valor) {
+function formatarValorHistorico(valor, campo) {
     if (valor === null || valor === undefined || valor === "") {
         return "—";
     }
 
+    if (typeof valor === "boolean") {
+        return valor ? "Sim" : "Não";
+    }
+
+    if (typeof valor === "number" && Number.isFinite(valor)) {
+        return String(valor);
+    }
+
     if (Array.isArray(valor)) {
-        return valor.filter(Boolean).join(", ") || "—";
+        const itens = valor
+            .map((item) => formatarValorHistorico(item, campo))
+            .filter((item) => item && item !== "—");
+        return itens.join(", ") || "—";
     }
 
     if (typeof valor === "object") {
@@ -1554,32 +1631,109 @@ function formatarValorHistorico(valor) {
         }
     }
 
-    const texto = String(valor);
+    const texto = String(valor).trim();
+    if (!texto) return "—";
+
+    if (campo === "status") {
+        const chave = texto.toLowerCase();
+        if (STATUS_HISTORICO[chave]) {
+            return STATUS_HISTORICO[chave];
+        }
+    }
+
     if (/^\d{4}-\d{2}-\d{2}/.test(texto)) {
         const [ano, mes, dia] = texto.slice(0, 10).split("-");
         return `${dia}/${mes}/${ano}`;
     }
 
+    if (texto === "true") return "Sim";
+    if (texto === "false") return "Não";
+
     return texto;
 }
 
-function emailDoEventoHistorico(evento) {
+function nomeDoEventoHistorico(evento) {
+    const usuario = evento?.usuario && typeof evento.usuario === "object"
+        ? evento.usuario
+        : {};
     const meta = evento?.metadata && typeof evento.metadata === "object"
         ? evento.metadata
         : {};
-    return meta.usuario_email || meta.email || "";
+
+    return (
+        String(usuario.nome || "").trim()
+        || String(usuario.email || "").trim()
+        || String(meta.usuario_nome || "").trim()
+        || String(meta.usuario_email || meta.email || "").trim()
+        || (evento?.usuario_id ? "Administrador" : "Sistema")
+    );
 }
 
 function camposDoEventoHistorico(evento) {
+    if (Array.isArray(evento?.campos) && evento.campos.length) {
+        return evento.campos;
+    }
+
     const meta = evento?.metadata && typeof evento.metadata === "object"
         ? evento.metadata
         : {};
 
-    if (Array.isArray(meta.campos)) {
+    if (Array.isArray(meta.campos) && meta.campos.length) {
         return meta.campos;
     }
 
+    if (meta.alteracoes && typeof meta.alteracoes === "object") {
+        return Object.entries(meta.alteracoes).map(([campo, delta]) => {
+            const mudanca =
+                delta && typeof delta === "object" && !Array.isArray(delta)
+                    ? delta
+                    : { antes: null, depois: delta };
+
+            return {
+                campo,
+                label: labelCampoHistorico(campo),
+                antes: mudanca.antes ?? null,
+                depois: mudanca.depois ?? null
+            };
+        });
+    }
+
     return [];
+}
+
+function htmlCampoHistorico(item, acao) {
+    const campo = item.campo || "";
+    const label = item.label || labelCampoHistorico(campo);
+    const chave = String(acao || "").toUpperCase();
+    const soDepois =
+        chave === "CREATE"
+        || chave === "DELETE"
+        || String(acao || "").toLowerCase() === "criada"
+        || String(acao || "").toLowerCase() === "excluída"
+        || String(acao || "").toLowerCase() === "excluida";
+
+    if (soDepois) {
+        const valor = formatarValorHistorico(item.depois, campo);
+        if (valor === "—") return "";
+
+        return `
+            <div class="historico-campo">
+                <strong>${escaparHtmlDetalhe(label)}</strong>
+                <p class="historico-campo__depois">${escaparHtmlDetalhe(valor)}</p>
+            </div>
+        `;
+    }
+
+    return `
+        <div class="historico-campo">
+            <strong>${escaparHtmlDetalhe(label)}</strong>
+            <p class="historico-campo__valores">
+                <span class="historico-campo__antes">${escaparHtmlDetalhe(formatarValorHistorico(item.antes, campo))}</span>
+                <span class="historico-campo__seta" aria-hidden="true">→</span>
+                <span class="historico-campo__depois">${escaparHtmlDetalhe(formatarValorHistorico(item.depois, campo))}</span>
+            </p>
+        </div>
+    `;
 }
 
 async function carregarHistorico() {
@@ -1596,7 +1750,7 @@ async function carregarHistorico() {
             : {};
 
         const resposta = await fetch(
-            `${API}/api/campanhas/historico/${campanhaId}`,
+            `${API}/api/campanhas/${campanhaId}/historico`,
             { headers }
         );
 
@@ -1631,41 +1785,26 @@ async function carregarHistorico() {
 
         container.innerHTML = lista.map((evento) => {
             const campos = camposDoEventoHistorico(evento);
-            const email = emailDoEventoHistorico(evento);
-            const camposHtml = campos.map((item) => {
-                const label = item.label || item.campo || "Campo";
-                const acao = String(evento.acao || "").toLowerCase();
-                const soDepois = acao === "criada" || acao === "excluída" || acao === "excluida";
-                const valorExibido = soDepois ? item.depois : item.depois;
-
-                if (soDepois && (valorExibido === null || valorExibido === undefined || valorExibido === "")) {
-                    return "";
-                }
-
-                if (soDepois) {
-                    return `
-                        <div class="historico-campo">
-                            <strong>${escaparHtmlDetalhe(label)}</strong>
-                            <p>${escaparHtmlDetalhe(formatarValorHistorico(item.depois))}</p>
-                        </div>
-                    `;
-                }
-
-                return `
-                    <div class="historico-campo">
-                        <strong>${escaparHtmlDetalhe(label)}</strong>
-                        <p>Antes: ${escaparHtmlDetalhe(formatarValorHistorico(item.antes))}</p>
-                        <p>Depois: ${escaparHtmlDetalhe(formatarValorHistorico(item.depois))}</p>
-                    </div>
-                `;
-            }).join("");
+            const nome = nomeDoEventoHistorico(evento);
+            const camposHtml = campos
+                .map((item) => htmlCampoHistorico(item, evento.acao))
+                .join("");
 
             return `
                 <article class="historico-item">
-                    <h3>${escaparHtmlDetalhe(rotuloAcaoHistorico(evento.acao))}</h3>
-                    <p class="historico-item__meta">
-                        ${escaparHtmlDetalhe(formatarDataHoraHistorico(evento.created_at))}
-                        ${email ? `<span>${escaparHtmlDetalhe(email)}</span>` : ""}
+                    <header class="historico-item__header">
+                        <h3>${escaparHtmlDetalhe(nome)}</h3>
+                        <p class="historico-item__meta">
+                            ${escaparHtmlDetalhe(formatarDataHoraHistorico(evento.created_at))}
+                        </p>
+                    </header>
+                    <p class="historico-item__acao">
+                        ${escaparHtmlDetalhe(
+                            String(evento.acao || "").toUpperCase() === "UPDATE"
+                            || String(evento.acao || "").toLowerCase() === "atualizada"
+                                ? rotuloAcaoHistorico(evento.acao, campos.length)
+                                : (evento.descricao || rotuloAcaoHistorico(evento.acao, campos.length))
+                        )}
                     </p>
                     ${camposHtml}
                 </article>

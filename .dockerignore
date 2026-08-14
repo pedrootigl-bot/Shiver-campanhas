@@ -1,0 +1,8 @@
+.git
+.cursor
+**/.env
+**/.env.local
+**/node_modules
+partner-hub/dist
+**/.DS_Store
+documents

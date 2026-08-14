@@ -1,58 +1,75 @@
 # Histórico / auditoria de campanhas
 
-Data: 13/08/2026
+Data: 14/08/2026
 
 ## O que foi feito
 
-Sistema de auditoria integrado aos fluxos já existentes de criar, editar e excluir campanha. A tabela `campanhas_historico` **já existia** no Supabase Shiver. Nenhuma coluna nova foi criada.
+Histórico automático de alterações em `campanhas`, com o administrador responsável e o diff dos campos. A tabela `campanhas_historico` **já existia**. Foram adicionadas colunas de auditoria em `campanhas` (`updated_by`, `updated_at`) e uma trigger `AFTER UPDATE`.
 
-## Colunas reais usadas
+## Colunas
 
-`id`, `created_at`, `campanha_id`, `usuario_id`, `acao`, `descricao`, `metadata`
+`campanhas_historico`: `id`, `created_at`, `campanha_id`, `usuario_id`, `acao`, `descricao`, `metadata`
 
-O JSON em `metadata` guarda:
+`campanhas` (auditoria): `updated_by` (UUID do admin autenticado), `updated_at`
 
-- `usuario_email` (quando o login atual entrega o e-mail)
-- `campos` — lista de `{ campo, label, antes, depois }`
-- `snapshot` — estado relevante na criação e na exclusão
+O JSON em `metadata` para UPDATE:
+
+```json
+{
+  "alteracoes": {
+    "titulo": { "antes": "HAVAL H9", "depois": "HAVAL H9 GT" }
+  },
+  "usuario_email": "admin@exemplo.com",
+  "usuario_nome": "Pedro Henrique"
+}
+```
+
+Registros antigos (criação/edição/exclusão feitos pelo backend) continuam com `metadata.campos` e `acao` em português (`criada`, `atualizada`, `excluída`). A interface lê os dois formatos.
 
 ## Como funciona
 
-1. Admin autenticado cria/edita/exclui campanha (`requireAuth` + JWT do Supabase).
-2. O backend grava um evento em `campanhas_historico` **depois** do sucesso da operação principal (na exclusão, **antes** de apagar a campanha).
-3. Se a auditoria falhar, a campanha **não** é revertida. O erro vai para o log `[HISTÓRICO]`.
-4. Edição sem mudança real de campo **não** gera registro.
-5. O painel consulta `GET /api/campanhas/historico/:id` (autenticado) e mostra a timeline na página de detalhes.
+1. Admin autentica com JWT (`requireAuth` + `supabase.auth.getUser`). O backend usa **service_role**, então `auth.uid()` na trigger não identifica o admin.
+2. Em criar / editar / ativar, o backend grava `updated_by` e `updated_at` a partir de `req.user.id`. O frontend **não** envia `updated_by`.
+3. A trigger `trg_campanhas_historico_update` compara `OLD` e `NEW` com `IS DISTINCT FROM`, ignora campos técnicos (`updated_at`, `updated_by`, `pronta_publicacao`, `id`, `created_at`) e insere **um** registro com `acao = UPDATE` só se houver mudança real.
+4. Criação e exclusão continuam registradas pelo backend (`criada` / `excluída`).
+5. Sincronização automática de status (job) zera `updated_by` para não atribuir a mudança ao último admin. A UI mostra **Sistema**.
+6. Antecipação de data: depois do UPDATE, o backend anexa `confirmacao_data_pendente` no registro mais recente (flag interna, sem endpoint de edição para o admin).
+7. Painel: `GET /api/campanhas/:id/historico` (alias: `/api/campanhas/historico/:id`), autenticado, `created_at DESC`.
 
-Ações gravadas: `criada`, `atualizada`, `excluída`.
+## SQL a executar
 
-`usuario_id` só é preenchido com o `id` do usuário autenticado. Nenhum ID é inventado.
+Rodar no SQL Editor do projeto Shiver:
+
+`documents/campanhas-historico-trigger.sql`
+
+Inclui colunas, índices, função, trigger e RLS.
 
 ## Arquivos
 
-Criados:
-
-- `backend/services/campanhaHistorico.service.js`
+- `documents/campanhas-historico-trigger.sql`
 - `documents/campanhas-historico-rls.sql`
 - `documents/campanhas-historico.md`
-
-Modificados:
-
+- `backend/services/campanhaHistorico.service.js`
 - `backend/routes/campanhaRoutes.js`
+- `backend/utils/campanhaStatus.js`
 - `frontend/admin/campanha-detalhes.html`
 - `frontend/admin/campanha-detalhes.js`
 - `frontend/css/admin/campanha-detalhes.css`
 
-Banco: nenhuma coluna/tabela nova. SQL de RLS em `documents/campanhas-historico-rls.sql` (executar no SQL Editor do projeto Shiver se ainda não estiver aplicado).
-
 ## Segurança
 
 - Rota de leitura exige Bearer JWT.
-- A API pública (`GET /api/campanhas` e `GET /api/campanhas/:id`) **não** devolve histórico.
-- RLS deve permanecer ligado na tabela. Anon/public sem grant.
+- API pública **não** devolve histórico.
+- Sem endpoints de PATCH/DELETE em `campanhas_historico`.
+- RLS ligado; anon sem grant; authenticated só SELECT.
+- Escrita: service_role e trigger `SECURITY DEFINER`.
 
-## Configuração pendente
+## Identificação do admin
 
-Rodar `documents/campanhas-historico-rls.sql` no SQL Editor do Supabase Shiver.
+`req.user` vem de `supabase.auth.getUser(token)`. `updated_by = req.user.id`. A trigger copia para `usuario_id` e tenta ler e-mail/nome em `auth.users`.
 
-Se existir FK `campanha_id → campanhas.id` com `ON DELETE CASCADE`, o evento de exclusão some junto com a campanha. Para preservar a auditoria após o delete, a FK precisa ser `ON DELETE SET NULL` ou removida. Não alterei isso automaticamente.
+## Pendência
+
+Executar `documents/campanhas-historico-trigger.sql` no SQL Editor do Supabase Shiver.
+
+Enquanto as colunas `updated_by` / `updated_at` não existirem, o backend **continua salvando** a campanha e registra o UPDATE pelo serviço (sem duplicar depois que a trigger estiver ativa).

@@ -11,7 +11,15 @@ const supabase = require("../config/supabase");
 const ACOES = Object.freeze({
     CRIADA: "criada",
     ATUALIZADA: "atualizada",
-    EXCLUIDA: "excluída"
+    UPDATE: "UPDATE",
+    EXCLUIDA: "excluída",
+    CREATE: "CREATE",
+    PUBLISH: "PUBLISH",
+    ACTIVATE: "ACTIVATE",
+    PAUSE: "PAUSE",
+    FINISH: "FINISH",
+    DELETE: "DELETE",
+    DUPLICATE: "DUPLICATE"
 });
 
 const CAMPOS_RASTREADOS = [
@@ -46,10 +54,12 @@ const LABELS_CAMPOS = {
     cupom: "Cupom",
     deposito_minimo: "Depósito mínimo",
     data_inicio: "Data de início",
-    data_fim: "Data de término",
+    data_fim: "Data de encerramento",
     status: "Status",
     imagem_card: "Imagem do card",
-    banner: "Banner"
+    banner: "Banner",
+    visao_geral: "Visão geral",
+    angulos_divulgacao: "Ângulos de divulgação"
 };
 
 function atorDoUsuario(usuario) {
@@ -61,6 +71,135 @@ function atorDoUsuario(usuario) {
     const email = usuario.email ? String(usuario.email) : null;
 
     return { usuario_id, email };
+}
+
+function auditoriaDaSessao(usuario) {
+    const ator = atorDoUsuario(usuario);
+
+    return {
+        updated_by: ator.usuario_id,
+        updated_at: new Date().toISOString()
+    };
+}
+
+function erroColunaAuditoria(error) {
+    const msg = [
+        error?.message,
+        error?.details,
+        error?.hint,
+        error?.code
+    ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+
+    return (
+        msg.includes("updated_by")
+        || msg.includes("updated_at")
+        || msg.includes("schema cache")
+    );
+}
+
+function payloadSemAuditoria(payload) {
+    const copia = { ...(payload || {}) };
+    delete copia.updated_by;
+    delete copia.updated_at;
+    return copia;
+}
+
+async function persistirCampanhaComAuditoria({ modo, campanhaId, payload } = {}) {
+    const executar = (dados) => {
+        if (modo === "insert") {
+            return supabase
+                .from("campanhas")
+                .insert([dados])
+                .select()
+                .single();
+        }
+
+        return supabase
+            .from("campanhas")
+            .update(dados)
+            .eq("id", campanhaId)
+            .select()
+            .single();
+    };
+
+    const primeira = await executar(payload);
+    if (!primeira.error) {
+        return {
+            data: primeira.data,
+            error: null,
+            triggerAtiva: true
+        };
+    }
+
+    if (!erroColunaAuditoria(primeira.error)) {
+        return {
+            data: primeira.data,
+            error: primeira.error,
+            triggerAtiva: false
+        };
+    }
+
+    const segunda = await executar(payloadSemAuditoria(payload));
+    return {
+        data: segunda.data,
+        error: segunda.error,
+        triggerAtiva: false
+    };
+}
+
+function labelDoCampo(campo) {
+    if (LABELS_CAMPOS[campo]) {
+        return LABELS_CAMPOS[campo];
+    }
+
+    return String(campo || "")
+        .replace(/_/g, " ")
+        .replace(/^\w/, (letra) => letra.toUpperCase()) || "Campo";
+}
+
+function camposDeAlteracoes(alteracoes) {
+    if (!alteracoes || typeof alteracoes !== "object" || Array.isArray(alteracoes)) {
+        return [];
+    }
+
+    return Object.entries(alteracoes).map(([campo, delta]) => {
+        const mudanca =
+            delta && typeof delta === "object" && !Array.isArray(delta)
+                ? delta
+                : { antes: null, depois: delta };
+
+        return {
+            campo,
+            label: labelDoCampo(campo),
+            antes: Object.prototype.hasOwnProperty.call(mudanca, "antes")
+                ? mudanca.antes
+                : null,
+            depois: Object.prototype.hasOwnProperty.call(mudanca, "depois")
+                ? mudanca.depois
+                : null
+        };
+    });
+}
+
+function extrairCamposMetadata(metadata) {
+    const meta =
+        metadata && typeof metadata === "object" && !Array.isArray(metadata)
+            ? metadata
+            : {};
+
+    if (Array.isArray(meta.campos) && meta.campos.length) {
+        return meta.campos.map((item) => ({
+            campo: item?.campo || "",
+            label: item?.label || labelDoCampo(item?.campo),
+            antes: item?.antes ?? null,
+            depois: item?.depois ?? null
+        }));
+    }
+
+    return camposDeAlteracoes(meta.alteracoes);
 }
 
 function snapshotRelevante(campanha) {
@@ -283,6 +422,133 @@ async function registrarExclusao({ campanha, usuario } = {}) {
     }
 }
 
+async function anexarMetadataAoHistoricoRecente(campanhaId, extraMetadata) {
+    const extra =
+        extraMetadata && typeof extraMetadata === "object"
+            ? extraMetadata
+            : null;
+
+    if (!extra || !Object.keys(extra).length) {
+        return null;
+    }
+
+    const id = Number(campanhaId);
+    if (!id) {
+        return null;
+    }
+
+    try {
+        const { data, error } = await supabase
+            .from("campanhas_historico")
+            .select("id, metadata")
+            .eq("campanha_id", id)
+            .order("created_at", { ascending: false })
+            .limit(1)
+            .maybeSingle();
+
+        if (error || !data?.id) {
+            if (error) {
+                console.error(
+                    "[HISTÓRICO] Falha ao localizar registro recente:",
+                    error.message || error
+                );
+            }
+            return null;
+        }
+
+        const atual =
+            data.metadata && typeof data.metadata === "object"
+                ? data.metadata
+                : {};
+
+        const { error: erroUpdate } = await supabase
+            .from("campanhas_historico")
+            .update({
+                metadata: {
+                    ...atual,
+                    ...extra
+                }
+            })
+            .eq("id", data.id);
+
+        if (erroUpdate) {
+            throw erroUpdate;
+        }
+
+        return true;
+    } catch (error) {
+        console.error(
+            "[HISTÓRICO] Falha ao anexar metadata:",
+            error?.message || error
+        );
+        return null;
+    }
+}
+
+function nomeDoUsuarioAuth(usuario) {
+    if (!usuario || typeof usuario !== "object") {
+        return null;
+    }
+
+    const meta =
+        usuario.user_metadata && typeof usuario.user_metadata === "object"
+            ? usuario.user_metadata
+            : {};
+
+    return (
+        String(meta.full_name || meta.name || meta.nome || "").trim()
+        || String(usuario.email || "").trim()
+        || null
+    );
+}
+
+async function mapaUsuariosHistorico(usuarioIds = []) {
+    const ids = [...new Set(
+        (Array.isArray(usuarioIds) ? usuarioIds : [])
+            .map((id) => String(id || "").trim())
+            .filter(Boolean)
+    )];
+
+    const mapa = new Map();
+
+    await Promise.all(
+        ids.map(async (usuarioId) => {
+            try {
+                const { data, error } = await supabase.auth.admin.getUserById(
+                    usuarioId
+                );
+
+                if (error || !data?.user) {
+                    mapa.set(usuarioId, {
+                        id: usuarioId,
+                        email: null,
+                        nome: null
+                    });
+                    return;
+                }
+
+                mapa.set(usuarioId, {
+                    id: data.user.id,
+                    email: data.user.email || null,
+                    nome: nomeDoUsuarioAuth(data.user)
+                });
+            } catch (error) {
+                console.error(
+                    "[HISTÓRICO] Falha ao buscar admin:",
+                    error?.message || error
+                );
+                mapa.set(usuarioId, {
+                    id: usuarioId,
+                    email: null,
+                    nome: null
+                });
+            }
+        })
+    );
+
+    return mapa;
+}
+
 async function listarHistorico(campanhaId) {
     const id = Number(campanhaId);
 
@@ -302,7 +568,38 @@ async function listarHistorico(campanhaId) {
         throw error;
     }
 
-    return Array.isArray(data) ? data : [];
+    const linhas = Array.isArray(data) ? data : [];
+    const usuarios = await mapaUsuariosHistorico(
+        linhas.map((linha) => linha.usuario_id)
+    );
+
+    return linhas.map((linha) => {
+        const meta =
+            linha.metadata && typeof linha.metadata === "object"
+                ? linha.metadata
+                : {};
+        const usuarioId = linha.usuario_id ? String(linha.usuario_id) : null;
+        const doAuth = usuarioId ? usuarios.get(usuarioId) : null;
+
+        return {
+            ...linha,
+            campos: extrairCamposMetadata(meta),
+            usuario: {
+                id: usuarioId,
+                email:
+                    doAuth?.email
+                    || meta.usuario_email
+                    || meta.email
+                    || null,
+                nome:
+                    doAuth?.nome
+                    || meta.usuario_nome
+                    || meta.usuario_email
+                    || meta.email
+                    || null
+            }
+        };
+    });
 }
 
 /**
@@ -359,9 +656,14 @@ async function mapaConfirmacaoDataPendente(campanhaIds = []) {
 module.exports = {
     ACOES,
     CAMPOS_RASTREADOS,
+    LABELS_CAMPOS,
+    anexarMetadataAoHistoricoRecente,
+    auditoriaDaSessao,
     compararCampos,
+    extrairCamposMetadata,
     listarHistorico,
     mapaConfirmacaoDataPendente,
+    persistirCampanhaComAuditoria,
     registrarAtualizacao,
     registrarCriacao,
     registrarExclusao,

@@ -231,15 +231,40 @@ async function sincronizarStatusCampanhas(supabase, campanhas = [], opcoes = {})
             pendencias.map((item) =>
                 supabase
                     .from("campanhas")
-                    .update({ status: item.status })
+                    .update({
+                        status: item.status,
+                        updated_by: null,
+                        updated_at: new Date().toISOString()
+                    })
                     .eq("id", item.id)
-                    .then(({ error }) => {
-                        if (error) {
+                    .then(async ({ error }) => {
+                        if (!error) return;
+
+                        const msg = String(error.message || "").toLowerCase();
+                        const colunaAusente =
+                            msg.includes("updated_by")
+                            || msg.includes("updated_at")
+                            || msg.includes("schema cache");
+
+                        if (colunaAusente) {
+                            const retry = await supabase
+                                .from("campanhas")
+                                .update({ status: item.status })
+                                .eq("id", item.id);
+
+                            if (!retry.error) return;
+
                             console.error(
                                 `Erro ao sincronizar status da campanha ${item.id}:`,
-                                error
+                                retry.error
                             );
+                            return;
                         }
+
+                        console.error(
+                            `Erro ao sincronizar status da campanha ${item.id}:`,
+                            error
+                        );
                     })
             )
         );

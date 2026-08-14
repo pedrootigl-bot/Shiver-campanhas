@@ -1,6 +1,9 @@
 const express = require("express");
 const cors = require("cors");
-require("dotenv").config();
+const path = require("path");
+require("dotenv").config({
+    path: path.join(__dirname, ".env")
+});
 
 const campanhasRoutes = require("./routes/campanhaRoutes");
 const partnerHubRoutes = require("./routes/partnerHubRoutes");
@@ -15,20 +18,44 @@ const angulosRoutes = require("./routes/angulosRoutes");
 const uploadRoutes = require("./routes/uploadRoutes");
 const notificacoesRoutes = require("./routes/notificacoesRoutes");
 const authRoutes = require("./routes/authRoutes");
+const { servirSitePublico } = require("./servePublico");
 const {
     iniciarScheduler,
     pararScheduler
 } = require("./jobs");
 
 const app = express();
+app.set("trust proxy", 1);
 
-const corsOrigins = String(
-    process.env.CORS_ORIGINS
-    || "http://localhost:5500,http://127.0.0.1:5500,http://localhost:3000,http://localhost:5173,http://127.0.0.1:5173,http://localhost:5174,http://127.0.0.1:5174,http://localhost:5175,http://127.0.0.1:5175,http://localhost:5176,http://127.0.0.1:5176,http://localhost:55434,http://127.0.0.1:55434"
-)
-    .split(",")
-    .map((origin) => origin.trim())
-    .filter(Boolean);
+function origensExtrasDoHost() {
+    const extras = [];
+    const publicUrl = String(process.env.PUBLIC_APP_URL || "")
+        .trim()
+        .replace(/\/$/, "");
+
+    if (publicUrl) extras.push(publicUrl);
+
+    const railway = String(process.env.RAILWAY_PUBLIC_DOMAIN || "").trim();
+    if (railway) extras.push(`https://${railway.replace(/^https?:\/\//, "")}`);
+
+    const render = String(process.env.RENDER_EXTERNAL_URL || "")
+        .trim()
+        .replace(/\/$/, "");
+    if (render) extras.push(render);
+
+    return extras;
+}
+
+const corsOrigins = [
+    ...String(
+        process.env.CORS_ORIGINS
+        || "http://localhost:5500,http://127.0.0.1:5500,http://localhost:3000,http://localhost:5173,http://127.0.0.1:5173,http://localhost:5174,http://127.0.0.1:5174,http://localhost:5175,http://127.0.0.1:5175,http://localhost:5176,http://127.0.0.1:5176,http://localhost:55434,http://127.0.0.1:55434"
+    )
+        .split(",")
+        .map((origin) => origin.trim())
+        .filter(Boolean),
+    ...origensExtrasDoHost()
+];
 
 function origemPermitida(origin) {
     if (!origin) return true;
@@ -138,16 +165,25 @@ app.use(
     uploadRoutes
 );
 
-app.use(
-    "/api/notificacoes",
-    notificacoesRoutes
-);
+app.use("/api/notificacoes", notificacoesRoutes);
 
-app.get("/", (req, res) => {
+app.get("/api/health", (_req, res) => {
     res.json({
-        mensagem: "API Bullex funcionando!"
+        ok: true,
+        servico: "shiver-campanhas"
     });
 });
+
+const siteNoAr = servirSitePublico(app);
+
+if (!siteNoAr) {
+    app.get("/", (_req, res) => {
+        res.json({
+            mensagem: "API Shiver-Campanhas no ar",
+            dica: "O site (Partner Hub + admin) aparece em / depois do build do partner-hub"
+        });
+    });
+}
 
 const PORT = process.env.PORT || 3000;
 

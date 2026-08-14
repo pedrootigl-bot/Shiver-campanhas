@@ -1,0 +1,13 @@
+{
+  "name": "shiver-campanhas",
+  "private": true,
+  "scripts": {
+    "build": "npm ci --prefix partner-hub && npm run build --prefix partner-hub",
+    "start": "npm start --prefix backend",
+    "dev:api": "npm run dev --prefix backend",
+    "dev:hub": "npm run dev --prefix partner-hub"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

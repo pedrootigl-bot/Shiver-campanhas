@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: shiver-campanhas
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production

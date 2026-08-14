@@ -18,7 +18,10 @@ const {
 } = require("../services/notificacoes.service");
 const { validarCampanha } = require("../services/campanhaValidacao.service");
 const {
+    anexarMetadataAoHistoricoRecente,
+    auditoriaDaSessao,
     listarHistorico,
+    persistirCampanhaComAuditoria,
     registrarAtualizacao,
     registrarCriacao,
     registrarExclusao
@@ -129,12 +132,7 @@ router.post("/sincronizar-status", requireAuth, async (req, res) => {
 });
 
 
-// ======================================================
-// HISTÓRICO DA CAMPANHA (admin autenticado)
-// GET /api/campanhas/historico/:id
-// ======================================================
-
-router.get("/historico/:id", requireAuth, async (req, res) => {
+async function responderHistoricoCampanha(req, res) {
     try {
         const campanhaId = Number(req.params.id);
 
@@ -162,7 +160,16 @@ router.get("/historico/:id", requireAuth, async (req, res) => {
             "Erro ao buscar histórico da campanha"
         );
     }
-});
+}
+
+// ======================================================
+// HISTÓRICO DA CAMPANHA (admin autenticado)
+// GET /api/campanhas/historico/:id
+// GET /api/campanhas/:id/historico
+// ======================================================
+
+router.get("/historico/:id", requireAuth, responderHistoricoCampanha);
+router.get("/:id/historico", requireAuth, responderHistoricoCampanha);
 
 
 // ======================================================
@@ -334,7 +341,9 @@ router.post("/", requireAuth, async (req, res) => {
             status: calcularStatusPorDatas(data_inicio, data_fim),
 
             imagem_card:
-                imagem_card?.trim() || null
+                imagem_card?.trim() || null,
+
+            ...auditoriaDaSessao(req.user)
 
         };
 
@@ -343,11 +352,10 @@ router.post("/", requireAuth, async (req, res) => {
         // INSERIR NO SUPABASE
         // ==================================================
 
-        const { data, error } = await supabase
-            .from("campanhas")
-            .insert([novaCampanha])
-            .select()
-            .single();
+        const { data, error } = await persistirCampanhaComAuditoria({
+            modo: "insert",
+            payload: novaCampanha
+        });
 
 
         if (error) {
@@ -487,12 +495,18 @@ router.post("/:id/publicar", requireAuth, async (req, res) => {
             });
         }
 
-        const { data: atualizada, error: erroUpdate } = await supabase
-            .from("campanhas")
-            .update({ status: "ativa" })
-            .eq("id", campanhaId)
-            .select()
-            .single();
+        const {
+            data: atualizada,
+            error: erroUpdate,
+            triggerAtiva
+        } = await persistirCampanhaComAuditoria({
+            modo: "update",
+            campanhaId,
+            payload: {
+                status: "ativa",
+                ...auditoriaDaSessao(req.user)
+            }
+        });
 
         if (erroUpdate) {
             return responderErroInterno(
@@ -502,15 +516,17 @@ router.post("/:id/publicar", requireAuth, async (req, res) => {
             );
         }
 
-        await registrarAtualizacao({
-            campanhaId,
-            anterior: campanha,
-            atual: {
-                ...campanha,
-                status: "ativa"
-            },
-            usuario: req.user
-        });
+        if (!triggerAtiva) {
+            await registrarAtualizacao({
+                campanhaId,
+                anterior: campanha,
+                atual: {
+                    ...campanha,
+                    status: "ativa"
+                },
+                usuario: req.user
+            });
+        }
 
         return res.json({
             mensagem: "Campanha ativada com sucesso",
@@ -670,7 +686,9 @@ router.put("/:id", requireAuth, async (req, res) => {
             }),
 
             imagem_card:
-                imagem_card?.trim() || null
+                imagem_card?.trim() || null,
+
+            ...auditoriaDaSessao(req.user)
 
         };
 
@@ -679,12 +697,11 @@ router.put("/:id", requireAuth, async (req, res) => {
         // UPDATE
         // ==============================================
 
-        const { data, error } = await supabase
-            .from("campanhas")
-            .update(campanhaAtualizada)
-            .eq("id", campanhaId)
-            .select()
-            .single();
+        const { data, error, triggerAtiva } = await persistirCampanhaComAuditoria({
+            modo: "update",
+            campanhaId,
+            payload: campanhaAtualizada
+        });
 
 
         if (error) {
@@ -716,19 +733,27 @@ router.put("/:id", requireAuth, async (req, res) => {
             fimNovo: data_fim
         });
 
-        await registrarAtualizacao({
-            campanhaId,
-            anterior: campanhaAnterior,
-            atual: campanhaAtualizada,
-            usuario: req.user,
-            extraMetadata: exigeConfirmacaoData
-                ? {
-                    confirmacao_data_pendente: true,
-                    data_inicio_anterior: dataISO(campanhaAnterior.data_inicio),
-                    data_inicio_nova: dataISO(data_inicio)
-                }
-                : undefined
-        });
+        const extraMetadata = exigeConfirmacaoData
+            ? {
+                confirmacao_data_pendente: true,
+                data_inicio_anterior: dataISO(campanhaAnterior.data_inicio),
+                data_inicio_nova: dataISO(data_inicio)
+            }
+            : undefined;
+
+        if (triggerAtiva) {
+            if (extraMetadata) {
+                await anexarMetadataAoHistoricoRecente(campanhaId, extraMetadata);
+            }
+        } else {
+            await registrarAtualizacao({
+                campanhaId,
+                anterior: campanhaAnterior,
+                atual: campanhaAtualizada,
+                usuario: req.user,
+                extraMetadata
+            });
+        }
 
         // ==============================================
         // RESPOSTA
